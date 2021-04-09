@@ -1,0 +1,28 @@
+# PlayerWarps by Oribuin | Donate @ https://oribuin.xyz/donate
+# Join https://oribuin.xyz/support if you are experiencing issues!
+
+# Enable if you want to save everything in MySQL
+mysql:
+  enabled: false
+  host: localhost
+  port: 3306
+  dbname: mysql
+  username: Username
+  password: Password
+  ssl: true
+
+# Which worlds can't warps be created in.
+disabled-worlds:
+  - 'Disabled-World-1'
+  - 'Disabled-World-2'
+
+# Teleportation Particles
+teleport-particles:
+  enabled: true
+  particle: WITCH
+
+# How many seconds until the player is teleported.
+teleport-delay: 3
+
+# How much money does it cost to create a warp.
+creation-cost: 1000.0

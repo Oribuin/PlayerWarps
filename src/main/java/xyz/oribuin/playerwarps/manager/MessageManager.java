@@ -80,9 +80,12 @@ public class MessageManager extends Manager {
 
     public enum MsgSetting {
         PREFIX("prefix", "&b&lPlayerWarps &8| &f"),
+        CREATED_WARP("created-warp", "You have created the warp, &b%warp%&f!"),
+        TELEPORTED("teleported-to-warp", "You have been teleported to &b%warp&f%!"),
+        WARP_LOCKED("warp-locked", "This warp is currently locked!"),
 
         RELOAD("reload", "You have reloaded PlayerWarps!"),
-        MAX_AUCTIONS("max-warps", "&cYou have reached the max warps."),
+        MAX_WARPS("max-warps", "&cYou have reached the max warps you can create."),
         INVALID_PERMISSION("invalid-permission", "&cYou do not have permission to execute this command."),
         INVALID_PLAYER("invalid-player", "&cPlease enter a valid player."),
         INVALID_ARGUMENTS("invalid-arguments", "&cPlease provide valid arguments. Correct usage: %usage%"),

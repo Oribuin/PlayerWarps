@@ -1,5 +1,7 @@
 package xyz.oribuin.playerwarps;
 
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import xyz.oribuin.orilibrary.OriPlugin;
 import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
@@ -53,4 +55,8 @@ public class PlayerWarps extends OriPlugin {
         return true;
     }
 
+    public static Economy getEconomy() {
+        return Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
+    }
+    
 }
