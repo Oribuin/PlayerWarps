@@ -1,0 +1,9 @@
+name: PlayerWarps
+main: xyz.oribuin.playerwarps.PlayerWarps
+description: PlayerWarps plugin made for shits & giggles
+api-version: '1.13'
+version: '1.0'
+author: Oribuin
+softdepend:
+  - Vault
+  - PlaceholderAPI
