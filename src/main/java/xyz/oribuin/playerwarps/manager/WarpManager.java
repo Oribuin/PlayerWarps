@@ -28,6 +28,11 @@ public class WarpManager extends Manager {
 
     public void teleportToWarp(Player player, Warp warp) {
         Location loc = warp.getLocation();
+
+        if (warp.isLocked()) {
+
+        }
+
         player.teleportAsync(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
     }
 

@@ -4,6 +4,7 @@ import org.bukkit.plugin.Plugin;
 import xyz.oribuin.orilibrary.OriPlugin;
 import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
 import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.MessageManager;
 import xyz.oribuin.playerwarps.manager.WarpManager;
 
 public class PlayerWarps extends OriPlugin {
@@ -17,6 +18,7 @@ public class PlayerWarps extends OriPlugin {
         // Register Managers Async
         this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
             this.getManager(DataManager.class);
+            this.getManager(MessageManager.class);
             this.getManager(WarpManager.class);
         });
 

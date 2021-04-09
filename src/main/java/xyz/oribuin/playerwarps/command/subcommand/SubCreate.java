@@ -18,8 +18,8 @@ public class SubCreate extends SubCommand {
 
     private final PlayerWarps plugin = (PlayerWarps) this.getOriPlugin();
 
-    public SubCreate(PlayerWarps plugin) {
-        super(plugin);
+    public SubCreate(PlayerWarps plugin, CmdPlayerWarp cmd) {
+        super(plugin, cmd);
     }
 
     @Override

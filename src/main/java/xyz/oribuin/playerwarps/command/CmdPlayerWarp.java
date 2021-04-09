@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.command.Command;
 import xyz.oribuin.orilibrary.libs.jetbrains.annotations.NotNull;
 import xyz.oribuin.playerwarps.PlayerWarps;
+import xyz.oribuin.playerwarps.command.subcommand.SubHelp;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.manager.WarpManager;
 import xyz.oribuin.playerwarps.obj.Warp;
@@ -35,14 +36,17 @@ public class CmdPlayerWarp extends Command {
     public void runFunction(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         final DataManager data = this.plugin.getManager(DataManager.class);
 
-        final Optional<Warp> optionalWarp = data.getCachedWarps().stream().filter(x -> x.getName().equalsIgnoreCase(args[0])).findAny();
-
-        if (args.length > 0 && !optionalWarp.isPresent()) {
-            this.runSubCommands(sender, args, null, null);
+        if (args.length == 0) {
+            new SubHelp(this.plugin, this).executeArgument(sender, args);
             return;
         }
 
-        if (!optionalWarp.isPresent()) return;
+        final Optional<Warp> optionalWarp = data.getCachedWarps().stream().filter(x -> x.getName().equalsIgnoreCase(args[0])).findAny();
+
+        if (!optionalWarp.isPresent()) {
+            this.runSubCommands(sender, args, null, null);
+            return;
+        }
 
         final Warp warp = optionalWarp.get();
         this.plugin.getManager(WarpManager.class).teleportToWarp((Player) sender, warp);
@@ -51,7 +55,7 @@ public class CmdPlayerWarp extends Command {
     @Override
     public @NotNull List<String> completeString(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
 
-        final List<String> tabComplete = new ArrayList<String>();
+        final List<String> tabComplete = new ArrayList<>();
         final DataManager data = this.plugin.getManager(DataManager.class);
 
         if (this.getAnnotation().permission().length() > 0 && !sender.hasPermission(this.getAnnotation().permission()))
@@ -59,8 +63,8 @@ public class CmdPlayerWarp extends Command {
 
         switch (args.length) {
             case 1: {
-                tabComplete.addAll(Arrays.asList("create"));
-                tabComplete.addAll(data.getCachedWarps().stream().map(Warp::getName).collect(Collectors.toList()));
+                tabComplete.addAll(Arrays.asList("create", "help", "list"));
+                tabComplete.addAll(data.getCachedWarps().stream().filter(warp -> !warp.isLocked()).map(Warp::getName).collect(Collectors.toList()));
 
                 break;
             }

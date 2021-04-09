@@ -3,6 +3,7 @@ package xyz.oribuin.playerwarps.manager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -16,11 +17,11 @@ import xyz.oribuin.playerwarps.obj.Warp;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class DataManager extends Manager {
 
@@ -36,62 +37,55 @@ public class DataManager extends Manager {
     public void enable() {
         FileConfiguration config = this.plugin.getConfig();
 
-        this.async(task -> {
-            if (config.getBoolean("mysql.enabled")) {
-                // Define all the MySQL Values.
-                String hostName = config.getString("mysql.host");
-                int port = config.getInt("mysql.port");
-                String dbname = config.getString("mysql.dbname");
-                String username = config.getString("mysql.username");
-                String password = config.getString("mysql.password");
-                boolean ssl = config.getBoolean("mysql.ssl");
+        if (config.getBoolean("mysql.enabled")) {
+            // Define all the MySQL Values.
+            String hostName = config.getString("mysql.host");
+            int port = config.getInt("mysql.port");
+            String dbname = config.getString("mysql.dbname");
+            String username = config.getString("mysql.username");
+            String password = config.getString("mysql.password");
+            boolean ssl = config.getBoolean("mysql.ssl");
 
-                // Connect to MySQL.
-                this.connector = new MySQLConnector(this.plugin, hostName, port, dbname, username, password, ssl);
-                this.plugin.getLogger().info("Using MySQL for Database ~ " + hostName + ":" + port);
-            } else {
+            // Connect to MySQL.
+            this.connector = new MySQLConnector(this.plugin, hostName, port, dbname, username, password, ssl);
+            this.plugin.getLogger().info("Using MySQL for Database ~ " + hostName + ":" + port);
+        } else {
 
-                // Create the database File
-                FileUtils.createFile(this.plugin, "playerwarps.db");
+            // Create the database File
+            FileUtils.createFile(this.plugin, "playerwarps.db");
 
-                // Connect to SQLite
-                this.connector = new SQLiteConnector(this.plugin, "playerwarps.db");
-                this.getPlugin().getLogger().info("Using SQLite for Database ~ playerwarps.db");
-            }
+            // Connect to SQLite
+            this.connector = new SQLiteConnector(this.plugin, "playerwarps.db");
+            this.getPlugin().getLogger().info("Using SQLite for Database ~ playerwarps.db");
+        }
 
-            this.createTables();
-            this.getWarps();
-        });
+        this.loadWarps();
 
     }
 
     /**
      * Create all the required tables for Data Saving.
      */
-    private void createTables() {
-
-        // Queries
-        String[] queries = new String[]{
-                "CREATE TABLE IF NOT EXISTS playerwarps_warps (owner VARCHAR(200), world TXT, x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, `name` TXT, `desc` TXT, icon TXT, locked BOOLEAN, PRIMARY KEY(owner))"
-        };
+    private void loadWarps() {
 
         // Create required tables for the plugin.
-        this.async(task -> this.connector.connect(connection -> {
-            try (Statement statement = connection.createStatement()) {
-                for (String query : queries) statement.addBatch(query);
+        this.async(task -> {
+            this.connector.connect(connection -> {
 
-                statement.executeBatch();
-            }
-        }));
+                try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS playerwarps_warps (owner VARCHAR(200), world TXT, x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, `name` TXT, `desc` TXT, icon TXT, locked BOOLEAN)")) {
+                    statement.executeUpdate();
+                }
 
+            });
+
+            this.cacheWarps();
+        });
     }
 
     /**
-     * Get a list of all the saved warps.
-     *
-     * @return The warp
+     * Load all the warps and cache them.
      */
-    private List<Warp> getWarps() {
+    private void cacheWarps() {
         this.cachedWarps.clear();
 
         List<Warp> list = new ArrayList<>();
@@ -123,7 +117,6 @@ public class DataManager extends Manager {
         });
 
         this.cachedWarps.addAll(list);
-        return list;
     }
 
     /**
@@ -193,6 +186,10 @@ public class DataManager extends Manager {
 
         }));
 
+    }
+
+    public List<Warp> getPlayersWarps(OfflinePlayer player) {
+        return this.cachedWarps.stream().filter(warp -> warp.getOwner().equals(player.getUniqueId())).collect(Collectors.toList());
     }
 
     @Override
