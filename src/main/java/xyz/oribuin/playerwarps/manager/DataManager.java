@@ -126,8 +126,8 @@ public class DataManager extends Manager {
      * @param name   The name of the warp
      * @return The new warp.
      */
-    public Warp createWarp(Player player, String name) {
-        Warp warp = new Warp(player.getUniqueId(), player.getLocation(), name);
+    public Warp createWarp(Player player, Location location, String name) {
+        Warp warp = new Warp(player.getUniqueId(), location, name);
         Location loc = warp.getLocation();
 
         this.cachedWarps.add(warp);
@@ -165,10 +165,9 @@ public class DataManager extends Manager {
     public void deleteWarp(Warp warp) {
         this.cachedWarps.remove(warp);
 
-        String query = "DELETE FROM playerwarps_warps WHERE owner = ? AND world = ? AND x = ? AND y = ? AND z = ? AND yaw = ? AND pitch = ? AND `name` = ? AND `desc` = ? AND locked = ?";
-
+        String query = "DELETE FROM playerwarps_warps WHERE owner = ? AND world = ? AND x = ? AND y = ? AND z = ? AND yaw = ? AND pitch = ? AND `name` = ? AND `desc` = ?";
         this.async(task -> this.connector.connect(connection -> {
-            Location loc = warp.getLocation();
+            final Location loc = warp.getLocation();
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, warp.getOwner().toString());
@@ -180,7 +179,6 @@ public class DataManager extends Manager {
                 statement.setFloat(7, loc.getPitch());
                 statement.setString(8, warp.getName());
                 statement.setString(9, warp.getDescription());
-                statement.setBoolean(10, warp.isLocked());
                 statement.executeUpdate();
             }
 

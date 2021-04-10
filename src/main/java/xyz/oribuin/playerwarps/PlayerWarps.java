@@ -2,6 +2,7 @@ package xyz.oribuin.playerwarps;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.oribuin.orilibrary.OriPlugin;
 import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
@@ -24,11 +25,11 @@ public class PlayerWarps extends OriPlugin {
             this.getManager(WarpManager.class);
         });
 
-        // Register Command
-        new CmdPlayerWarp(this).register("t", "tt");
+        FileConfiguration config = this.getManager(MessageManager.class).getMessageConfig();
 
-        // Register Listeners
-        // TODO
+        // Register Command
+        new CmdPlayerWarp(this).register(config.getString("player-only"), config.getString("invalid-permission"));
+
     }
 
     @Override
@@ -58,5 +59,5 @@ public class PlayerWarps extends OriPlugin {
     public static Economy getEconomy() {
         return Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
     }
-    
+
 }

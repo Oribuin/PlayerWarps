@@ -80,8 +80,9 @@ public class MessageManager extends Manager {
 
     public enum MsgSetting {
         PREFIX("prefix", "&b&lPlayerWarps &8| &f"),
-        CREATED_WARP("created-warp", "You have created the warp, &b%warp%&f!"),
-        TELEPORTED("teleported-to-warp", "You have been teleported to &b%warp&f%!"),
+        CREATED_WARP("created-warp", "You have created the warp for $%price%, &b%warp%&f!"),
+        DELETED_WARP("deleted-warp", "You have deleted the warp, &b%warp%&f!"),
+        TELEPORTED("teleported-to-warp", "You have been teleported to &b%warp%&f%!"),
         WARP_LOCKED("warp-locked", "This warp is currently locked!"),
 
         RELOAD("reload", "You have reloaded PlayerWarps!"),
@@ -91,9 +92,12 @@ public class MessageManager extends Manager {
         INVALID_ARGUMENTS("invalid-arguments", "&cPlease provide valid arguments. Correct usage: %usage%"),
         INVALID_FUNDS("invalid-funds", "&cYou do not have enough funds to do this, You need $%price%."),
         INVALID_ITEM("invalid-item", "This is not a valid item!"),
-        UNKNOWN_COMMAND("unknown-command", "&cPlease include a valid command."),
-        PLAYER_ONLY("player-only", "&cOnly a player can execute this command."),
-        CONSOLE_ONLY("console-only", "&cOnly console can execute this command.");
+        INVALID_WARP("invalid-warp", "This warp does not exists."),
+        WARP_EXISTS("warp-exists", "This warp already exists!"),
+        DONT_OWN_WARP("dont-own-warp", "You do not own this warp."),
+        UNKNOWN_COMMAND("unknown-command","&cPlease include a valid command."),
+        PLAYER_ONLY("player-only","&cOnly a player can execute this command."),
+        CONSOLE_ONLY("console-only","&cOnly console can execute this command.");
 
 
         private final String key;
@@ -178,5 +182,5 @@ public class MessageManager extends Manager {
         private void load(FileConfiguration config) {
             this.value = config.get(this.key);
         }
-    }
+        }
 }

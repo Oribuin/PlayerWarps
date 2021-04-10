@@ -1,12 +1,14 @@
 package xyz.oribuin.playerwarps.command;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.command.Command;
 import xyz.oribuin.orilibrary.libs.jetbrains.annotations.NotNull;
 import xyz.oribuin.playerwarps.PlayerWarps;
 import xyz.oribuin.playerwarps.command.subcommand.SubHelp;
 import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.MessageManager;
 import xyz.oribuin.playerwarps.manager.WarpManager;
 import xyz.oribuin.playerwarps.obj.Warp;
 
@@ -44,7 +46,9 @@ public class CmdPlayerWarp extends Command {
         final Optional<Warp> optionalWarp = data.getCachedWarps().stream().filter(x -> x.getName().equalsIgnoreCase(args[0])).findAny();
 
         if (!optionalWarp.isPresent()) {
-            this.runSubCommands(sender, args, null, null);
+            FileConfiguration config = this.plugin.getManager(MessageManager.class).getMessageConfig();
+
+            this.runSubCommands(sender, args, config.getString("unknown-command"), config.getString("invalid-permission"));
             return;
         }
 
@@ -63,14 +67,23 @@ public class CmdPlayerWarp extends Command {
 
         switch (args.length) {
             case 1: {
-                tabComplete.addAll(Arrays.asList("create", "help", "list"));
+                tabComplete.addAll(Arrays.asList("create", "delete", "help"));
                 tabComplete.addAll(data.getCachedWarps().stream().filter(warp -> !warp.isLocked()).map(Warp::getName).collect(Collectors.toList()));
 
                 break;
             }
 
             case 2: {
-                if (args[1].equalsIgnoreCase("create")) tabComplete.add("<name>");
+                if (args[0].equalsIgnoreCase("create")) tabComplete.add("<name>");
+                if (args[0].equalsIgnoreCase("delete")) {
+                    if (sender.hasPermission("playerwarps.delete.other"))
+                        tabComplete.addAll(data.getCachedWarps().stream().map(Warp::getName).collect(Collectors.toList()));
+                    else if (sender instanceof Player)
+                        tabComplete.addAll(data.getCachedWarps().stream().filter(warp -> warp.getOwner().equals(((Player) sender).getUniqueId())).map(Warp::getName).collect(Collectors.toList()));
+
+                }
+
+                break;
             }
 
             default:

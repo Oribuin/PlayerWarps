@@ -6,9 +6,10 @@ import xyz.oribuin.orilibrary.libs.jetbrains.annotations.NotNull;
 import xyz.oribuin.orilibrary.util.HexUtils;
 import xyz.oribuin.playerwarps.PlayerWarps;
 import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
-import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.MessageManager;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @SubCommand.Info(
@@ -28,16 +29,24 @@ public class SubHelp extends SubCommand {
     @Override
     public void executeArgument(@NotNull CommandSender sender, @NotNull String[] args) {
 
-        List<String> helpMessage = new ArrayList<>();
+        final String prefix = this.plugin.getManager(MessageManager.class).getMessageConfig().getString("prefix");
+        final List<String> helpMessage = new ArrayList<>();
+        final List<SubCommand> subCommands = this.getCommand().getSubCommands();
 
-        for (SubCommand cmd : getCommand().getSubCommands()) {
+        // Sort it out barry
+        subCommands.sort(Comparator.comparing(cmd -> cmd.getAnnotation().names()[0]));
+
+        // Put your back into it gerald (Add all commands to help message)
+        for (SubCommand cmd : subCommands) {
             Info info = cmd.getAnnotation();
 
+            // John i told you, You can't do that (Check if has perrmission)
             if (info.permission().length() > 0 && !sender.hasPermission(info.permission())) continue;
 
-            helpMessage.add(HexUtils.colorify("&b» &f" + info.usage()));
+            helpMessage.add(HexUtils.colorify(prefix + "&b» &f" + info.usage()));
         }
 
+        // Clearly these are the commands, linda
         helpMessage.forEach(sender::sendMessage);
 
     }

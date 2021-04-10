@@ -1,5 +1,6 @@
 package xyz.oribuin.playerwarps.command.subcommand;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.command.SubCommand;
@@ -57,12 +58,20 @@ public class SubCreate extends SubCommand {
             return;
         }
 
+        // yo, the warp exists, why you tryna make a new one??
+        if (data.getCachedWarps().stream().anyMatch(warp -> warp.getName().equalsIgnoreCase(args[1]))) {
+            this.msg.sendMessage(sender, "warp-exists");
+            return;
+        }
+
         // Modern day capitalism is poggers
         if (creationCost > 0) PlayerWarps.getEconomy().withdrawPlayer(player, creationCost);
 
         // Create the warp susan
-        Warp warp = this.plugin.getManager(DataManager.class).createWarp(player, args[1]);
-        msg.sendMessage(sender, "created-warp", StringPlaceholders.single("warp", warp.getName()));
+        final Location location = player.getLocation();
+
+        Warp warp = this.plugin.getManager(DataManager.class).createWarp(player, location, args[1]);
+        msg.sendMessage(sender, "created-warp", StringPlaceholders.builder("warp", warp.getName()).addPlaceholder("price", creationCost).build());
 
     }
 
