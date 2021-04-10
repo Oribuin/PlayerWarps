@@ -54,18 +54,6 @@ public class SubDelete extends SubCommand {
             return;
         }
 
-        System.out.println("SubDelete.java 57");
-        System.out.println(warp.getName());
-        System.out.println(warp.getLocation().getWorld());
-        System.out.println(warp.getLocation().getX());
-        System.out.println(warp.getLocation().getY());
-        System.out.println(warp.getLocation().getZ());
-        System.out.println(warp.getLocation().getYaw());
-        System.out.println(warp.getLocation().getPitch());
-        System.out.println(warp.getName());
-        System.out.println(warp.getDescription());
-        System.out.println(warp.isLocked());
-
         this.msg.sendMessage(sender, "deleted-warp", StringPlaceholders.single("warp", warp.getName()));
         this.data.deleteWarp(warp);
     }
