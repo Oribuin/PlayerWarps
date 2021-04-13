@@ -26,3 +26,13 @@ teleport-delay: 3
 
 # How much money does it cost to create a warp.
 creation-cost: 1000.0
+
+# Maximum Length of a Description
+max-name-length: 20
+# Should chat colors be included in pw name length
+ignore-name-colors: true
+
+# Maximum Length of a Description
+max-desc-length: 20
+# Should chat colors be included in description length
+ignore-desc-colors: true

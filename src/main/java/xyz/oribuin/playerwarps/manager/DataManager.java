@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import xyz.oribuin.orilibrary.database.DatabaseConnector;
 import xyz.oribuin.orilibrary.database.MySQLConnector;
@@ -20,6 +19,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -72,7 +72,7 @@ public class DataManager extends Manager {
         this.async(task -> {
             this.connector.connect(connection -> {
 
-                try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS playerwarps_warps (owner VARCHAR(200), world TXT, x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, name TXT, desc TXT, icon TXT, locked BOOLEAN)")) {
+                try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS playerwarps_warps (owner VARCHAR(200), world TXT, x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, name TXT, desc TXT, icon TXT, locked BOOLEAN, PRIMARY KEY(name))")) {
                     statement.executeUpdate();
                 }
 
@@ -85,11 +85,11 @@ public class DataManager extends Manager {
     /**
      * Load all the warps and cache them.
      */
-    private void cacheWarps() {
+    public void cacheWarps() {
         this.cachedWarps.clear();
 
         List<Warp> list = new ArrayList<>();
-        this.connector.connect(connection -> {
+        CompletableFuture.runAsync(() -> this.connector.connect(connection -> {
 
             String query = "SELECT * FROM playerwarps_warps";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -105,36 +105,34 @@ public class DataManager extends Manager {
                             result.getFloat("pitch")
                     );
 
-                    Warp warp = new Warp(UUID.fromString(result.getString("owner")), loc, result.getString("name"))
-                            .setDescription(result.getString("desc"))
-                            .setIcon(Material.valueOf(result.getString("icon")))
-                            .setLocked(result.getBoolean("locked"));
+                    Warp warp = new Warp(UUID.fromString(result.getString("owner")), loc, result.getString("name"));
+
+                    warp.setDescription(result.getString("desc"));
+                    warp.setIcon(Material.valueOf(result.getString("icon")));
+                    warp.setLocked(result.getBoolean("locked"));
 
                     list.add(warp);
                 }
 
             }
-        });
 
-        this.cachedWarps.addAll(list);
+
+        })).thenRunAsync(() -> this.cachedWarps.addAll(list));
     }
 
     /**
-     * Create and save a warp into the database
+     * Create or update a warp into the database.
      *
-     * @param player The warp owner
-     * @param name   The name of the warp
-     * @return The new warp.
+     * @param warp The warp
      */
-    public Warp createWarp(Player player, Location location, String name) {
-        Warp warp = new Warp(player.getUniqueId(), location, name);
-        Location loc = warp.getLocation();
-
+    public void updateWarp(Warp warp) {
+        this.cachedWarps.remove(warp);
         this.cachedWarps.add(warp);
+        final Location loc = warp.getLocation();
 
         // Add to db
         this.async(task -> this.connector.connect(connection -> {
-            String query = "INSERT INTO playerwarps_warps (owner, world, x, y, z, yaw, pitch, `name`, `desc`, icon, locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "REPLACE INTO playerwarps_warps (owner, world, x, y, z, yaw, pitch, `name`, `desc`, icon, locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, warp.getOwner().toString());
@@ -154,7 +152,6 @@ public class DataManager extends Manager {
 
         }));
 
-        return warp;
     }
 
     /**

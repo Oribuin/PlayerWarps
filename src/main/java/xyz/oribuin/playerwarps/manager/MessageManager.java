@@ -84,6 +84,8 @@ public class MessageManager extends Manager {
         DELETED_WARP("deleted-warp", "You have deleted the warp, &b%warp%&f!"),
         TELEPORTED("teleported-to-warp", "You have been teleported to &b%warp%&f%!"),
         WARP_LOCKED("warp-locked", "This warp is currently locked!"),
+        CHANGED_NAME("changed-name", "You have changed the name of %oldName% to %newName%!"),
+        CHANGED_DESC("changed-desc", "You have changed the description of %oldDesc% to %newDesc%!"),
 
         RELOAD("reload", "You have reloaded PlayerWarps!"),
         MAX_WARPS("max-warps", "&cYou have reached the max warps you can create."),
@@ -93,11 +95,12 @@ public class MessageManager extends Manager {
         INVALID_FUNDS("invalid-funds", "&cYou do not have enough funds to do this, You need $%price%."),
         INVALID_ITEM("invalid-item", "This is not a valid item!"),
         INVALID_WARP("invalid-warp", "This warp does not exists."),
+        MAX_LENGTH("max-length", "Your message cannot be over %chars% characters!"),
         WARP_EXISTS("warp-exists", "This warp already exists!"),
         DONT_OWN_WARP("dont-own-warp", "You do not own this warp."),
-        UNKNOWN_COMMAND("unknown-command","&cPlease include a valid command."),
-        PLAYER_ONLY("player-only","&cOnly a player can execute this command."),
-        CONSOLE_ONLY("console-only","&cOnly console can execute this command.");
+        UNKNOWN_COMMAND("unknown-command", "&cPlease include a valid command."),
+        PLAYER_ONLY("player-only", "&cOnly a player can execute this command."),
+        CONSOLE_ONLY("console-only", "&cOnly console can execute this command.");
 
 
         private final String key;
@@ -182,5 +185,5 @@ public class MessageManager extends Manager {
         private void load(FileConfiguration config) {
             this.value = config.get(this.key);
         }
-        }
+    }
 }

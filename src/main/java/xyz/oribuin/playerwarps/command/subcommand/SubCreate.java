@@ -70,7 +70,10 @@ public class SubCreate extends SubCommand {
         // Create the warp susan
         final Location location = player.getLocation();
 
-        Warp warp = this.plugin.getManager(DataManager.class).createWarp(player, location, args[1]);
+        Warp warp = new Warp(player.getUniqueId(), location, args[1]);
+
+        // Creates the warp
+        this.plugin.getManager(DataManager.class).updateWarp(warp);
         msg.sendMessage(sender, "created-warp", StringPlaceholders.builder("warp", warp.getName()).addPlaceholder("price", creationCost).build());
 
     }
