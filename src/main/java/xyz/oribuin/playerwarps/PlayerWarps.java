@@ -6,11 +6,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import xyz.oribuin.orilibrary.OriPlugin;
 import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
+import xyz.oribuin.playerwarps.gui.WarpMenu;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.manager.MessageManager;
 import xyz.oribuin.playerwarps.manager.WarpManager;
 
 public class PlayerWarps extends OriPlugin {
+
+    private WarpMenu warpMenu;
 
     @Override
     public void enablePlugin() {
@@ -30,6 +33,8 @@ public class PlayerWarps extends OriPlugin {
         // Register Command
         new CmdPlayerWarp(this).register(config.getString("player-only"), config.getString("invalid-permission"));
 
+        // Register GUI
+        this.warpMenu = new WarpMenu(this);
     }
 
     @Override
@@ -60,4 +65,7 @@ public class PlayerWarps extends OriPlugin {
         return Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
     }
 
+    public WarpMenu getWarpMenu() {
+        return warpMenu;
+    }
 }

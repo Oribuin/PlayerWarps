@@ -1,5 +1,6 @@
 package xyz.oribuin.playerwarps.command.subcommand;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -70,7 +71,7 @@ public class SubCreate extends SubCommand {
         // Create the warp susan
         final Location location = player.getLocation();
 
-        Warp warp = new Warp(player.getUniqueId(), location, args[1]);
+        final Warp warp = new Warp(player.getUniqueId(), location, args[1]);
 
         // Creates the warp
         this.plugin.getManager(DataManager.class).updateWarp(warp);

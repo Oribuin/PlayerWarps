@@ -16,6 +16,11 @@ disabled-worlds:
   - 'Disabled-World-1'
   - 'Disabled-World-2'
 
+# Items that can't be set as warp icons
+disabled-icons:
+  - 'BEDROCK'
+  - 'SPAWNER'
+
 # Teleportation Particles
 teleport-particles:
   enabled: true

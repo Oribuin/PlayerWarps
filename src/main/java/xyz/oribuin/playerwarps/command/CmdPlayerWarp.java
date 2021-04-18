@@ -1,5 +1,6 @@
 package xyz.oribuin.playerwarps.command;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -67,7 +68,7 @@ public class CmdPlayerWarp extends Command {
 
         switch (args.length) {
             case 1: {
-                tabComplete.addAll(Arrays.asList("create", "delete", "help"));
+                tabComplete.addAll(Arrays.asList("create", "delete", "help", "name", "desc", "icon"));
                 tabComplete.addAll(data.getCachedWarps().stream().filter(warp -> !warp.isLocked()).map(Warp::getName).collect(Collectors.toList()));
 
                 break;
@@ -75,15 +76,17 @@ public class CmdPlayerWarp extends Command {
 
             case 2: {
                 if (args[0].equalsIgnoreCase("create")) tabComplete.add("<name>");
-                if (args[0].equalsIgnoreCase("delete")) {
-                    if (sender.hasPermission("playerwarps.delete.other"))
-                        tabComplete.addAll(data.getCachedWarps().stream().map(Warp::getName).collect(Collectors.toList()));
-                    else if (sender instanceof Player)
-                        tabComplete.addAll(data.getCachedWarps().stream().filter(warp -> warp.getOwner().equals(((Player) sender).getUniqueId())).map(Warp::getName).collect(Collectors.toList()));
-
-                }
-
+                if (args[0].equalsIgnoreCase("delete")) tabComplete.addAll(this.getWarpNames(sender, "playerwarps.delete.other"));
+                if (args[0].equalsIgnoreCase("name")) tabComplete.addAll(this.getWarpNames(sender, "playerwarps.name.other"));
+                if (args[0].equalsIgnoreCase("desc")) tabComplete.addAll(this.getWarpNames(sender, "playerwarps.desc.other"));
+                if (args[0].equalsIgnoreCase("icon")) tabComplete.addAll(this.getWarpNames(sender, "playerwarps.icon.other"));
                 break;
+            }
+
+            case 3: {
+                if (args[0].equalsIgnoreCase("name")) tabComplete.add("<new-name>");
+                if (args[0].equalsIgnoreCase("desc")) tabComplete.add("<new-desc>");
+                if (args[0].equalsIgnoreCase("icon")) tabComplete.addAll(Arrays.stream(Material.values()).filter(Material::isItem).filter(it -> !it.name().contains("AIR")).map(x -> x.name().toLowerCase()).collect(Collectors.toList()));
             }
 
             default:
@@ -93,4 +96,18 @@ public class CmdPlayerWarp extends Command {
 
         return tabComplete;
     }
+
+    private List<String> getWarpNames(CommandSender sender, String permission) {
+
+        final List<String> tabComplete = new ArrayList<>();
+        final DataManager data = this.plugin.getManager(DataManager.class);
+
+        if (sender.hasPermission(permission))
+            tabComplete.addAll(data.getCachedWarps().stream().map(Warp::getName).collect(Collectors.toList()));
+        else if (sender instanceof Player)
+            tabComplete.addAll(data.getCachedWarps().stream().filter(warp -> warp.getOwner().equals(((Player) sender).getUniqueId())).map(Warp::getName).collect(Collectors.toList()));
+
+        return tabComplete;
+    }
+
 }
