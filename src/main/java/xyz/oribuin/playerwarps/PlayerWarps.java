@@ -3,7 +3,6 @@ package xyz.oribuin.playerwarps;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
 import xyz.oribuin.orilibrary.OriPlugin;
 import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
 import xyz.oribuin.playerwarps.gui.WarpMenu;
@@ -42,25 +41,6 @@ public class PlayerWarps extends OriPlugin {
 
     }
 
-    /**
-     * Check if the server has a plugin enabled.
-     *
-     * @param pluginName The plugin
-     * @return true if plugin is enabled.
-     */
-    private boolean hasPlugin(String pluginName) {
-        Plugin plugin = this.getServer().getPluginManager().getPlugin(pluginName);
-
-        if (plugin == null || !plugin.isEnabled()) {
-            this.getLogger().severe("Please install " + pluginName + " to use this plugin.");
-            this.getLogger().severe("Disabling...");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return false;
-        }
-
-        return true;
-    }
-
     public static Economy getEconomy() {
         return Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
     }
@@ -68,4 +48,5 @@ public class PlayerWarps extends OriPlugin {
     public WarpMenu getWarpMenu() {
         return warpMenu;
     }
+
 }

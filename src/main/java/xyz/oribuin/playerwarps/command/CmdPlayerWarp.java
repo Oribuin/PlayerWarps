@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.command.Command;
 import xyz.oribuin.orilibrary.libs.jetbrains.annotations.NotNull;
 import xyz.oribuin.playerwarps.PlayerWarps;
-import xyz.oribuin.playerwarps.command.subcommand.SubHelp;
+import xyz.oribuin.playerwarps.command.subcommand.*;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.manager.MessageManager;
 import xyz.oribuin.playerwarps.manager.WarpManager;
@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
         aliases = {"pw", "warps"},
         permission = "playerwarps.use",
         playerOnly = true,
-        usage = "/pw <create> <name>"
+        usage = "/pw <create> <name>",
+        subcommands = {SubCreate.class, SubDelete.class, SubDescription.class, SubHelp.class, SubIcon.class, SubMenu.class, SubName.class}
+
 )
 public class CmdPlayerWarp extends Command {
 

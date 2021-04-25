@@ -193,7 +193,7 @@ public class DataManager extends Manager {
     }
 
     public void async(Consumer<BukkitTask> callback) {
-        new Thread(() -> this.plugin.getServer().getScheduler().runTaskAsynchronously(plugin, callback)).start();
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(plugin, callback);
     }
 
     public List<Warp> getCachedWarps() {
