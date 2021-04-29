@@ -35,7 +35,7 @@ public class DataManager extends Manager {
 
     @Override
     public void enable() {
-        FileConfiguration config = this.plugin.getConfig();
+        final FileConfiguration config = this.plugin.getConfig();
 
         if (config.getBoolean("mysql.enabled")) {
             // Define all the MySQL Values.
@@ -126,7 +126,8 @@ public class DataManager extends Manager {
      * @param warp The warp
      */
     public void updateWarp(Warp warp) {
-        this.cachedWarps.remove(warp);
+
+        this.cachedWarps.removeIf(x -> x.getName().equalsIgnoreCase(warp.getName()));
         this.cachedWarps.add(warp);
         final Location loc = warp.getLocation();
 

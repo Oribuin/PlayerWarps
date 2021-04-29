@@ -56,4 +56,5 @@ public class WarpMenu {
             gui.addItem(builder.asGuiItem(event -> this.plugin.getManager(WarpManager.class).teleportToWarp((Player) event.getWhoClicked(), warp)));
         }
     }
+
 }
