@@ -42,6 +42,11 @@ public class WarpManager extends Manager {
         }
 
         msg.send(player, "teleported-to-warp", StringPlaceholders.single("warp", warp.getName()));
+        if (!plugin.isPaperSpigot()) {
+            player.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            return;
+        }
+
         player.teleportAsync(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
