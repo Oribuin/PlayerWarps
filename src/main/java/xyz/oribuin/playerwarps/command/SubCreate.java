@@ -65,7 +65,7 @@ public class SubCreate extends SubCommand {
             PlayerWarps.getEconomy().withdrawPlayer(player, creationCost);
 
         // Create the warp susan
-        final Location location = player.getLocation().clone().add(0.5, 0.0, 0.5);
+        final Location location = player.getLocation().clone().getBlock().getLocation().add(0.5, 0.0, 0.5);
 
         final Warp warp = new Warp(player.getUniqueId(), location, args[1]);
 
