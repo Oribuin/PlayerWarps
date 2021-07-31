@@ -8,8 +8,9 @@ import java.util.UUID;
 public class Warp {
 
     private final UUID owner;
+    private final String name;
     private Location location;
-    private String name;
+    private String displayName;
     private String description = null;
     private Material icon = Material.PAPER;
     private boolean locked = false;
@@ -37,11 +38,6 @@ public class Warp {
         return name;
     }
 
-    public Warp setName(String name) {
-        this.name = name;
-        return this;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -66,6 +62,15 @@ public class Warp {
 
     public Warp setLocked(boolean locked) {
         this.locked = locked;
+        return this;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public Warp setDisplayName(String displayName) {
+        this.displayName = displayName;
         return this;
     }
 

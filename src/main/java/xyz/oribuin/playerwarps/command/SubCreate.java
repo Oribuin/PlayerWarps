@@ -1,14 +1,11 @@
-package xyz.oribuin.playerwarps.command.subcommand;
+package xyz.oribuin.playerwarps.command;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.command.SubCommand;
-import xyz.oribuin.orilibrary.libs.jetbrains.annotations.NotNull;
 import xyz.oribuin.orilibrary.util.StringPlaceholders;
 import xyz.oribuin.playerwarps.PlayerWarps;
-import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.manager.MessageManager;
 import xyz.oribuin.playerwarps.obj.Warp;
@@ -17,8 +14,7 @@ import xyz.oribuin.playerwarps.util.PluginUtils;
 @SubCommand.Info(
         names = {"create"},
         permission = "playerwarps.create",
-        usage = "/pw create <name>",
-        command = CmdPlayerWarp.class
+        usage = "/pw create <name>"
 )
 public class SubCreate extends SubCommand {
 
@@ -31,17 +27,16 @@ public class SubCreate extends SubCommand {
     }
 
     @Override
-    public void executeArgument(@NotNull CommandSender sender, @NotNull String[] args) {
+    public void executeArgument(CommandSender sender, String[] args) {
 
         // Check if Player
-        if (!(sender instanceof Player)) {
-            this.msg.sendMessage(sender, "player-only");
+        if (!(sender instanceof Player player)) {
+            this.msg.send(sender, "player-only");
             return;
         }
 
-        Player player = (Player) sender;
         if (args.length != 2) {
-            this.msg.sendMessage(sender, "invalid-arguments", StringPlaceholders.single("usage", this.getAnnotation().usage()));
+            this.msg.send(sender, "invalid-arguments", StringPlaceholders.single("usage", this.getInfo().usage()));
             return;
         }
 
@@ -49,33 +44,34 @@ public class SubCreate extends SubCommand {
         double creationCost = this.plugin.getConfig().getDouble("creation-cost");
 
         if (creationCost > 0 && !PlayerWarps.getEconomy().has(player, creationCost)) {
-            this.msg.sendMessage(sender, "invalid-funds", StringPlaceholders.single("price", creationCost));
+            this.msg.send(sender, "invalid-funds", StringPlaceholders.single("price", creationCost));
             return;
         }
 
         // Calm down sarah, you can't have too many warps
         if (data.getPlayersWarps(player).size() > PluginUtils.getMaxWarps(player) && !player.hasPermission("playerwarps.max.unlimited")) {
-            this.msg.sendMessage(sender, "max-warps");
+            this.msg.send(sender, "max-warps");
             return;
         }
 
         // yo, the warp exists, why you tryna make a new one??
-        if (data.getCachedWarps().stream().anyMatch(warp -> warp.getName().equalsIgnoreCase(args[1]))) {
-            this.msg.sendMessage(sender, "warp-exists");
+        if (data.getWarpByName(args[1]).isPresent()) {
+            this.msg.send(sender, "warp-exists");
             return;
         }
 
         // Modern day capitalism is poggers
-        if (creationCost > 0) PlayerWarps.getEconomy().withdrawPlayer(player, creationCost);
+        if (creationCost > 0)
+            PlayerWarps.getEconomy().withdrawPlayer(player, creationCost);
 
         // Create the warp susan
         final Location location = player.getLocation();
 
-        final Warp warp = new Warp(player.getUniqueId(), location, args[1]);
+        final Warp warp = new Warp(player.getUniqueId(), location.toCenterLocation(), args[1]);
 
         // Creates the warp
         this.plugin.getManager(DataManager.class).updateWarp(warp);
-        msg.sendMessage(sender, "created-warp", StringPlaceholders.builder("warp", warp.getName()).addPlaceholder("price", creationCost).build());
+        msg.send(sender, "created-warp", StringPlaceholders.builder("warp", warp.getName()).addPlaceholder("price", creationCost).build());
 
     }
 

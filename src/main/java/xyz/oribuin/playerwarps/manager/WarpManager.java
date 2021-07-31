@@ -36,13 +36,13 @@ public class WarpManager extends Manager {
     public void teleportToWarp(Player player, Warp warp) {
         Location loc = warp.getLocation();
 
-        if (warp.isLocked()) {
-            msg.sendMessage(player, "warp-locked");
+        if (warp.isLocked() && !player.hasPermission("playerwarps.bypass")) {
+            msg.send(player, "warp-locked");
             return;
         }
 
-        msg.sendMessage(player, "teleported-to-warp", StringPlaceholders.single("warp", warp.getName()));
-        player.teleportAsync(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
+        msg.send(player, "teleported-to-warp", StringPlaceholders.single("warp", warp.getName()));
+        player.teleportAsync(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
 

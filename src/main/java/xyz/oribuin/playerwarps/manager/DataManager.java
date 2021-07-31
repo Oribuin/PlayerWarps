@@ -16,9 +16,7 @@ import xyz.oribuin.playerwarps.obj.Warp;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -26,7 +24,8 @@ import java.util.stream.Collectors;
 public class DataManager extends Manager {
 
     private final PlayerWarps plugin = (PlayerWarps) this.getPlugin();
-    private final List<Warp> cachedWarps = new ArrayList<>();
+
+    private final Map<String, Warp> cachedWarps = new HashMap<>();
     private DatabaseConnector connector;
 
     public DataManager(PlayerWarps plugin) {
@@ -69,17 +68,27 @@ public class DataManager extends Manager {
     private void loadWarps() {
 
         // Create required tables for the plugin.
-        this.async(task -> {
-            this.connector.connect(connection -> {
+        CompletableFuture.runAsync(() -> this.connector.connect(connection -> {
+            String query = "CREATE TABLE IF NOT EXISTS (" +
+                    "name VARCHAR(200), " +
+                    "owner VARCHAR(64), " +
+                    "world VARCHAR(100), " +
+                    "x DOUBLE, " +
+                    "y DOUBLE, " +
+                    "z DOUBLE, " +
+                    "yaw FLOAT, " +
+                    "pitch FLOAT, " +
+                    "desc VARCHAR(200), " +
+                    "icon VARCHAR(64), " +
+                    "locked BOOLEAN, " +
+                    "PRIMARY KEY (name))";
 
-                try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS playerwarps_warps (owner VARCHAR(200), world TXT, x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, name TXT, desc TXT, icon TXT, locked BOOLEAN, PRIMARY KEY(name))")) {
-                    statement.executeUpdate();
-                }
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.executeUpdate();
+            }
 
-            });
+        })).thenRun(this::cacheWarps);
 
-            this.cacheWarps();
-        });
     }
 
     /**
@@ -107,6 +116,7 @@ public class DataManager extends Manager {
 
                     Warp warp = new Warp(UUID.fromString(result.getString("owner")), loc, result.getString("name"));
 
+                    warp.setDisplayName(result.getString("displayName"));
                     warp.setDescription(result.getString("desc"));
                     warp.setIcon(Material.valueOf(result.getString("icon")));
                     warp.setLocked(result.getBoolean("locked"));
@@ -117,7 +127,7 @@ public class DataManager extends Manager {
             }
 
 
-        })).thenRunAsync(() -> this.cachedWarps.addAll(list));
+        })).thenRunAsync(() -> list.forEach(warp -> this.cachedWarps.put(warp.getName().toLowerCase(), warp)));
     }
 
     /**
@@ -127,13 +137,12 @@ public class DataManager extends Manager {
      */
     public void updateWarp(Warp warp) {
 
-        this.cachedWarps.removeIf(x -> x.getName().equalsIgnoreCase(warp.getName()));
-        this.cachedWarps.add(warp);
+        this.cachedWarps.put(warp.getName().toLowerCase(), warp);
         final Location loc = warp.getLocation();
 
         // Add to db
         this.async(task -> this.connector.connect(connection -> {
-            String query = "REPLACE INTO playerwarps_warps (owner, world, x, y, z, yaw, pitch, `name`, `desc`, icon, locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "REPLACE INTO playerwarps_warps (owner, world, x, y, z, yaw, pitch, name, desc, icon, locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, warp.getOwner().toString());
@@ -147,6 +156,7 @@ public class DataManager extends Manager {
                 statement.setString(9, warp.getDescription());
                 statement.setString(10, warp.getIcon().name());
                 statement.setBoolean(11, warp.isLocked());
+                statement.setString(12, warp.getDisplayName());
                 statement.executeUpdate();
 
             }
@@ -161,7 +171,7 @@ public class DataManager extends Manager {
      * @param warp The warp
      */
     public void deleteWarp(Warp warp) {
-        this.cachedWarps.remove(warp);
+        this.cachedWarps.remove(warp.getName().toLowerCase());
 
         this.async(task -> this.connector.connect(connection -> {
             final Location loc = warp.getLocation();
@@ -184,8 +194,24 @@ public class DataManager extends Manager {
 
     }
 
+    /**
+     * Get a list of all warps owned by the player.
+     *
+     * @param player The player
+     * @return The list of player's warps.
+     */
     public List<Warp> getPlayersWarps(OfflinePlayer player) {
-        return this.cachedWarps.stream().filter(warp -> warp.getOwner().equals(player.getUniqueId())).collect(Collectors.toList());
+        return this.cachedWarps.values().stream().filter(warp -> warp.getOwner().equals(player.getUniqueId())).collect(Collectors.toList());
+    }
+
+    /**
+     * Get a a warp by the warp name.
+     *
+     * @param name The name of the warp
+     * @return An optional Warp
+     */
+    public Optional<Warp> getWarpByName(String name) {
+        return Optional.ofNullable(this.cachedWarps.get(name.toLowerCase()));
     }
 
     @Override
@@ -197,7 +223,8 @@ public class DataManager extends Manager {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(plugin, callback);
     }
 
-    public List<Warp> getCachedWarps() {
+    public Map<String, Warp> getCachedWarps() {
         return cachedWarps;
     }
+
 }

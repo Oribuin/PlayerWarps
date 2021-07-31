@@ -1,189 +1,161 @@
 package xyz.oribuin.playerwarps.manager;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.manager.Manager;
 import xyz.oribuin.orilibrary.util.FileUtils;
-import xyz.oribuin.orilibrary.util.HexUtils;
 import xyz.oribuin.orilibrary.util.StringPlaceholders;
 import xyz.oribuin.playerwarps.PlayerWarps;
-import xyz.oribuin.playerwarps.hook.PlaceholderAPIHook;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+
+import static xyz.oribuin.orilibrary.util.HexUtils.colorify;
 
 public class MessageManager extends Manager {
 
     private final PlayerWarps plugin = (PlayerWarps) this.getPlugin();
 
-    private static FileConfiguration messageConfig;
+    private FileConfiguration config;
 
     public MessageManager(PlayerWarps plugin) {
         super(plugin);
     }
 
+    public static String applyPapi(CommandSender sender, String text) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"))
+            return text;
+
+        return PlaceholderAPI.setPlaceholders(sender instanceof Player ? (Player) sender : null, text);
+    }
+
     @Override
     public void enable() {
-        FileUtils.createFile(this.getPlugin(), "messages.yml");
-        messageConfig = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), "messages.yml"));
+        this.config = YamlConfiguration.loadConfiguration(FileUtils.createFile(this.plugin, "messages.yml"));
 
-        for (MsgSetting value : MsgSetting.values()) {
-            if (messageConfig.get(value.key) == null) {
-                messageConfig.set(value.key, value.defaultValue);
+        // Set any values that dont exist
+        for (Messages msg : Messages.values()) {
+
+            final String key = msg.name().toLowerCase().replace("_", "-");
+
+            if (config.get(key) == null) {
+                config.set(key, msg.value);
             }
 
-            value.load(messageConfig);
         }
 
         try {
-            messageConfig.save(new File(plugin.getDataFolder(), "messages.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            config.save(new File(plugin.getDataFolder(), "messages.yml"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+
+    }
+
+    public FileConfiguration getConfig() {
+        return config;
+    }
+
+    /**
+     * Send a configuration message without any placeholders
+     *
+     * @param receiver  The CommandSender who receives the message.
+     * @param messageId The message path
+     */
+    public void send(CommandSender receiver, String messageId) {
+        this.send(receiver, messageId, StringPlaceholders.empty());
+    }
+
+    /**
+     * Send a configuration messageId with placeholders.
+     *
+     * @param receiver     The CommandSender who receives the messageId.
+     * @param messageId    The messageId path
+     * @param placeholders The Placeholders
+     */
+    public void send(CommandSender receiver, String messageId, StringPlaceholders placeholders) {
+        final String msg = this.getConfig().getString(messageId);
+
+        if (msg == null) {
+            receiver.sendMessage(colorify("&c&lError &7| &fThis is an invalid message in the messages file, Please contact the server owner about this issue. (Id: " + messageId + ")"));
+            return;
+        }
+
+        final String prefix = this.getConfig().getString("prefix");
+        receiver.sendMessage(colorify(prefix + apply(receiver instanceof Player ? receiver : null, placeholders.apply(msg))));
+    }
+
+    /**
+     * Send a raw message to the receiver without any placeholders
+     * <p>
+     * Use this to send a message to a player without the message being defined in a config.
+     *
+     * @param receiver The message receiver
+     * @param message  The raw message
+     */
+    public void sendRaw(CommandSender receiver, String message) {
+        this.sendRaw(receiver, message, StringPlaceholders.empty());
+    }
+
+    /**
+     * Send a raw message to the receiver with placeholders.
+     * <p>
+     * Use this to send a message to a player without the message being defined in a config.
+     *
+     * @param receiver     The message receiver
+     * @param message      The message
+     * @param placeholders Message Placeholders.
+     */
+    public void sendRaw(CommandSender receiver, String message, StringPlaceholders placeholders) {
+        receiver.sendMessage(colorify(apply(receiver instanceof Player ? receiver : null, placeholders.apply(message))));
+    }
+
+    public String get(String message) {
+        return colorify(this.config.getString(message) != null ? this.config.getString(message) : Messages.valueOf(message.replace("-", "_")).value);
     }
 
     @Override
     public void disable() {
-        // Unused
+
     }
 
-    public void sendMessage(CommandSender sender, String message) {
-        this.sendMessage(sender, message, StringPlaceholders.empty());
+    public String apply(CommandSender sender, String text) {
+        return applyPapi(sender, text);
     }
 
-    public void sendMessage(CommandSender sender, String message, StringPlaceholders placeholders) {
-        if (messageConfig.getString(message) == null) {
-            sender.sendMessage(HexUtils.colorify(messageConfig.getString("prefix") + placeholders.apply(message)));
-            return;
+    public enum Messages {
+        PREFIX("&b&lPlayerWarps &8| &f"),
+        CREATED_WARP("You have created the warp for $%price%, &b%warp%&f!"),
+        DELETED_WARP("You have deleted the warp, &b%warp%&f!"),
+        TELEPORTED("You have been teleported to &b%warp%&f!"),
+        WARP_LOCKED("This warp is currently locked!"),
+        CHANGED_NAME("You have changed the name of %oldName% to %newName%!"),
+        CHANGED_DESC("You have changed the description of %oldDesc% to %newDesc%!"),
+        MAX_WARPS("&cYou have reached the max warps you can create."),
+        MAX_LENGTH("Your message cannot be over %chars% characters!"),
+        WARP_EXISTS("This warp already exists!"),
+        DONT_OWN_WARP("You do not own this warp."),
+
+        RELOAD("You have reloaded PlayerWarps!"),
+        NO_PERM("&cYou do not have permission to execute this command."),
+        INVALID_PLAYER("&cPlease enter a valid player."),
+        INVALID_ARGS("&cPlease provide valid arguments. Correct usage: %usage%"),
+        INVALID_FUNDS("&cYou do not have enough funds to do this, You need $%price%."),
+        INVALID_ITEM("This is not a valid item!"),
+        INVALID_WARP("This warp does not exists."),
+        UNKNOWN_COMMAND("&cPlease include a valid command."),
+        PLAYER_ONLY("&cOnly a player can execute this command."),
+        CONSOLE_ONLY("&cOnly console can execute this command.");
+
+        private final String value;
+
+        Messages(final String value) {
+            this.value = value;
         }
 
-        if (messageConfig.getString(message) != null && !messageConfig.getString(message).isEmpty()) {
-            final String msg = messageConfig.getString("prefix") + placeholders.apply(messageConfig.getString(message));
-
-            sender.sendMessage(HexUtils.colorify(this.parsePlaceholders(sender, msg)));
-        }
-    }
-
-    public FileConfiguration getMessageConfig() {
-        return messageConfig;
-    }
-
-    private String parsePlaceholders(CommandSender sender, String message) {
-        if (sender instanceof Player)
-            return PlaceholderAPIHook.apply((Player) sender, message);
-
-        return message;
-    }
-
-    public enum MsgSetting {
-        PREFIX("prefix", "&b&lPlayerWarps &8| &f"),
-        CREATED_WARP("created-warp", "You have created the warp for $%price%, &b%warp%&f!"),
-        DELETED_WARP("deleted-warp", "You have deleted the warp, &b%warp%&f!"),
-        TELEPORTED("teleported-to-warp", "You have been teleported to &b%warp%&f!"),
-        WARP_LOCKED("warp-locked", "This warp is currently locked!"),
-        CHANGED_NAME("changed-name", "You have changed the name of %oldName% to %newName%!"),
-        CHANGED_DESC("changed-desc", "You have changed the description of %oldDesc% to %newDesc%!"),
-
-        RELOAD("reload", "You have reloaded PlayerWarps!"),
-        MAX_WARPS("max-warps", "&cYou have reached the max warps you can create."),
-        INVALID_PERMISSION("invalid-permission", "&cYou do not have permission to execute this command."),
-        INVALID_PLAYER("invalid-player", "&cPlease enter a valid player."),
-        INVALID_ARGUMENTS("invalid-arguments", "&cPlease provide valid arguments. Correct usage: %usage%"),
-        INVALID_FUNDS("invalid-funds", "&cYou do not have enough funds to do this, You need $%price%."),
-        INVALID_ITEM("invalid-item", "This is not a valid item!"),
-        INVALID_WARP("invalid-warp", "This warp does not exists."),
-        MAX_LENGTH("max-length", "Your message cannot be over %chars% characters!"),
-        WARP_EXISTS("warp-exists", "This warp already exists!"),
-        DONT_OWN_WARP("dont-own-warp", "You do not own this warp."),
-        UNKNOWN_COMMAND("unknown-command", "&cPlease include a valid command."),
-        PLAYER_ONLY("player-only", "&cOnly a player can execute this command."),
-        CONSOLE_ONLY("console-only", "&cOnly console can execute this command.");
-
-
-        private final String key;
-        private final Object defaultValue;
-        private Object value = null;
-
-        MsgSetting(String key, Object defaultValue) {
-            this.key = key;
-            this.defaultValue = defaultValue;
-        }
-
-
-        /**
-         * Gets the setting as a boolean
-         *
-         * @return The setting as a boolean
-         */
-        public boolean getBoolean() {
-            return (boolean) this.value;
-        }
-
-        /**
-         * @return the setting as an int
-         */
-        public int getInt() {
-            return (int) this.getNumber();
-        }
-
-        /**
-         * @return the setting as a long
-         */
-        public long getLong() {
-            return (long) this.getNumber();
-        }
-
-        /**
-         * @return the setting as a double
-         */
-        public double getDouble() {
-            return this.getNumber();
-        }
-
-        /**
-         * @return the setting as a float
-         */
-        public float getFloat() {
-            return (float) this.getNumber();
-        }
-
-        /**
-         * @return the setting as a String
-         */
-        public String getString() {
-            return (String) this.value;
-        }
-
-        private double getNumber() {
-            if (this.value instanceof Integer) {
-                return (int) this.value;
-            } else if (this.value instanceof Short) {
-                return (short) this.value;
-            } else if (this.value instanceof Byte) {
-                return (byte) this.value;
-            } else if (this.value instanceof Float) {
-                return (float) this.value;
-            }
-
-            return (double) this.value;
-        }
-
-        /**
-         * @return the setting as a string list
-         */
-        @SuppressWarnings("unchecked")
-        public List<String> getStringList() {
-            return (List<String>) this.value;
-        }
-
-        /**
-         * Loads the value from the config and caches it
-         */
-        private void load(FileConfiguration config) {
-            this.value = config.get(this.key);
-        }
     }
 }

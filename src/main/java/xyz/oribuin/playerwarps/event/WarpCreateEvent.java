@@ -8,14 +8,17 @@ import xyz.oribuin.playerwarps.obj.Warp;
 
 public class WarpCreateEvent extends Event implements Cancellable {
 
-    private boolean cancelled = false;
     private static final HandlerList list = new HandlerList();
-
     private final Warp warp;
+    private boolean cancelled = false;
 
     public WarpCreateEvent(Warp warp) {
         super(false);
         this.warp = warp;
+    }
+
+    public static HandlerList getHandlerList() {
+        return list;
     }
 
     public Warp getAuction() {
@@ -25,10 +28,6 @@ public class WarpCreateEvent extends Event implements Cancellable {
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return list;
-    }
-
-    public static HandlerList getHandlerList() {
         return list;
     }
 

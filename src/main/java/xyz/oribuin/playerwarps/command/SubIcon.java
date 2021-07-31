@@ -1,13 +1,11 @@
-package xyz.oribuin.playerwarps.command.subcommand;
+package xyz.oribuin.playerwarps.command;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.oribuin.orilibrary.command.SubCommand;
-import xyz.oribuin.orilibrary.libs.jetbrains.annotations.NotNull;
 import xyz.oribuin.orilibrary.util.StringPlaceholders;
 import xyz.oribuin.playerwarps.PlayerWarps;
-import xyz.oribuin.playerwarps.command.CmdPlayerWarp;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.manager.MessageManager;
 import xyz.oribuin.playerwarps.obj.Warp;
@@ -17,8 +15,7 @@ import java.util.Optional;
 @SubCommand.Info(
         names = {"icon"},
         permission = "playerwarps.icon",
-        usage = "/pw icon <warp> <icon>",
-        command = CmdPlayerWarp.class
+        usage = "/pw icon <warp> <icon>"
 )
 public class SubIcon extends SubCommand {
 
@@ -31,27 +28,25 @@ public class SubIcon extends SubCommand {
     }
 
     @Override
-    public void executeArgument(@NotNull CommandSender sender, @NotNull String[] args) {
+    public void executeArgument(CommandSender sender, String[] args) {
 
         // Check if Player
-        if (!(sender instanceof Player)) {
-            this.msg.sendMessage(sender, "player-only");
+        if (!(sender instanceof final Player player)) {
+            this.msg.send(sender, "player-only");
             return;
         }
-
-        final Player player = (Player) sender;
 
         // Check arguments
         if (args.length != 3) {
-            this.msg.sendMessage(sender, "invalid-arguments", StringPlaceholders.single("usage", this.getAnnotation().usage()));
+            this.msg.send(sender, "invalid-arguments", StringPlaceholders.single("usage", this.getInfo().usage()));
             return;
         }
 
-        final Optional<Warp> optionalWarp = data.getCachedWarps().stream().filter(x -> x.getName().equalsIgnoreCase(args[1])).findAny();
+        final Optional<Warp> optionalWarp = data.getWarpByName(args[1]);
 
         // Check if warp exists.
-        if (!optionalWarp.isPresent()) {
-            this.msg.sendMessage(sender, "invalid-warp");
+        if (optionalWarp.isEmpty()) {
+            this.msg.send(sender, "invalid-warp");
             return;
         }
 
@@ -59,7 +54,7 @@ public class SubIcon extends SubCommand {
 
         // Check if player does not have have permission or sender is player and warp owner !equals sender unique
         if (!player.hasPermission("playerwarps.icon.other") && !warp.getOwner().equals((player).getUniqueId())) {
-            this.msg.sendMessage(sender, "dont-own-warp");
+            this.msg.send(sender, "dont-own-warp");
             return;
         }
 
@@ -68,14 +63,14 @@ public class SubIcon extends SubCommand {
 
         // Check length
         if (item == null || this.plugin.getConfig().getStringList("disabled-icons").contains(item.name())) {
-            this.msg.sendMessage(sender, "invalid-item");
+            this.msg.send(sender, "invalid-item");
             return;
         }
 
         warp.setIcon(item);
 
         this.data.updateWarp(warp);
-        this.msg.sendMessage(sender, "changed-icon", StringPlaceholders.single("icon", item.name()));
+        this.msg.send(sender, "changed-icon", StringPlaceholders.single("icon", item.name()));
 
     }
 
