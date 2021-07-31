@@ -19,6 +19,7 @@ public class Warp {
         this.owner = owner;
         this.location = location;
         this.name = name;
+        this.displayName = name;
     }
 
     public UUID getOwner() {

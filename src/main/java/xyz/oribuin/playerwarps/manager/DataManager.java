@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class DataManager extends Manager {
 
     private final PlayerWarps plugin = (PlayerWarps) this.getPlugin();
+    private final String table = Optional.ofNullable(this.plugin.getConfig().getString("mysql.tablename")).orElse("playerwarps") + "_warps";
 
     private final Map<String, Warp> cachedWarps = new HashMap<>();
     private DatabaseConnector connector;
@@ -69,7 +70,7 @@ public class DataManager extends Manager {
 
         // Create required tables for the plugin.
         CompletableFuture.runAsync(() -> this.connector.connect(connection -> {
-            String query = "CREATE TABLE IF NOT EXISTS (" +
+            String query = "CREATE TABLE IF NOT EXISTS " + table + "(" +
                     "name VARCHAR(200), " +
                     "owner VARCHAR(64), " +
                     "world VARCHAR(100), " +
@@ -81,6 +82,7 @@ public class DataManager extends Manager {
                     "desc VARCHAR(200), " +
                     "icon VARCHAR(64), " +
                     "locked BOOLEAN, " +
+                    "displayName VARCHAR(200), " +
                     "PRIMARY KEY (name))";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -100,7 +102,7 @@ public class DataManager extends Manager {
         List<Warp> list = new ArrayList<>();
         CompletableFuture.runAsync(() -> this.connector.connect(connection -> {
 
-            String query = "SELECT * FROM playerwarps_warps";
+            String query = "SELECT * FROM " + table;
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 ResultSet result = statement.executeQuery();
 
@@ -142,7 +144,7 @@ public class DataManager extends Manager {
 
         // Add to db
         this.async(task -> this.connector.connect(connection -> {
-            String query = "REPLACE INTO playerwarps_warps (owner, world, x, y, z, yaw, pitch, name, desc, icon, locked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "REPLACE INTO " + table + " (owner, world, x, y, z, yaw, pitch, name, desc, icon, locked, displayName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, warp.getOwner().toString());
@@ -176,7 +178,7 @@ public class DataManager extends Manager {
         this.async(task -> this.connector.connect(connection -> {
             final Location loc = warp.getLocation();
 
-            final String query = "DELETE FROM playerwarps_warps WHERE owner = ? AND world = ? AND x = ? AND y = ? AND z = ? AND yaw = ? AND pitch = ? AND name = ?";
+            final String query = "DELETE FROM " + table + " WHERE owner = ? AND world = ? AND x = ? AND y = ? AND z = ? AND yaw = ? AND pitch = ? AND name = ?";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, warp.getOwner().toString());

@@ -131,7 +131,7 @@ public class MessageManager extends Manager {
         PREFIX("&b&lPlayerWarps &8| &f"),
         CREATED_WARP("You have created the warp for $%price%, &b%warp%&f!"),
         DELETED_WARP("You have deleted the warp, &b%warp%&f!"),
-        TELEPORTED("You have been teleported to &b%warp%&f!"),
+        TELEPORTED_TO_WARP("You have been teleported to &b%warp%&f!"),
         WARP_LOCKED("This warp is currently locked!"),
         CHANGED_NAME("You have changed the name of %oldName% to %newName%!"),
         CHANGED_DESC("You have changed the description of %oldDesc% to %newDesc%!"),
