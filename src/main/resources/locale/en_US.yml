@@ -1,0 +1,55 @@
+# en_US translation by Oribuin
+# Plugin Message Prefix
+prefix: <g:#00B4DB:#0083B0>&l{{PLUGIN_NAME}} &8| &f
+
+# Generic Command Messages
+no-permission: '&fYou don''t have permission for that!'
+only-player: '&fThis command can only be executed by a player.'
+unknown-command: '&fUnknown command, use #00B4DB/%cmd% help &ffor more info.'
+unknown-command-error: '&cAn unknown error occurred; details have been printed to console. Please contact a server administrator.'
+invalid-subcommand: '&fInvalid subcommand.'
+invalid-argument: '&fInvalid argument: #00B4DB%message%&f.'
+invalid-argument-null: '&fInvalid argument: #00B4DB%name% &fwas null.'
+missing-arguments: '&fMissing arguments, #00B4DB%amount% &frequired.'
+missing-arguments-extra: '&fMissing arguments, #00B4DB%amount%+ &frequired.'
+
+# Base Command Message
+base-command-color: '#00B4DB'
+base-command-help: '&fUse #00B4DB/%cmd% help &ffor command information.'
+
+# Create Command
+command-create-description: Create a new player warp.
+command-create-success: 'You have successfully created the warp #00B4DB%warp%'
+command-create-exists: 'The warp #00B4DB%warp% &falready exists.'
+command-create-disabled-world: 'You cannot create a warp in this world.'
+command-create-limit: 'You can only create #00B4DB%limit% &fwarps'
+command-create-cost: 'You do not have enough money to create this warp. It costs #00B4DB%cost%'
+command-create-cooldown: 'You cannot create a warp for #00B4DB%cooldown% &fmore seconds.'
+
+# Delete Command
+command-delete-description: Delete a player warp.
+command-delete-success: 'You have successfully deleted the warp #00B4DB%warp%'
+command-delete-not-owner: 'You do not own the warp #00B4DB%warp%'
+command-delete-cooldown: 'You cannot delete a warp for #00B4DB%cooldown% &fmore seconds.'
+command-delete-cost: 'You do not have enough money to delete this warp. It costs #00B4DB%cost%'
+
+# Teleport Command
+command-teleport-description: Teleport to a player warp.
+command-teleport-success: 'You have successfully teleported to the warp #00B4DB%warp%'
+command-teleport-cost: 'You do not have enough money to teleport to this warp. It costs #00B4DB%cost%'
+command-teleport-cooldown: 'You cannot teleport to a warp for #00B4DB%cooldown% &fmore seconds.'
+command-teleport-disabled-world: 'You cannot teleport to a warp in this world.'
+command-teleport-banned: 'You cannot teleport to this warp because you are banned.'
+
+# Reload Command
+command-reload-description: Reloads the plugin.
+command-reload-reloaded: Configuration and locale files were reloaded
+
+# Help Command
+command-help-title: '&fAvailable Commands:'
+command-help-description: Displays the help menu.
+command-help-list-description: '&8 - #00B4DB/%cmd% %subcmd% %args% &7- %desc%'
+command-help-list-description-no-args: '&8 - #00B4DB/%cmd% %subcmd% &7- %desc%'
+
+# Argument Handler Error Messages
+argument-handler-warp: 'No warp with the name #00B4DB%input% &fwas found.'

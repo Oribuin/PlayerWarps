@@ -1,9 +1,42 @@
 name: PlayerWarps
-main: xyz.oribuin.playerwarps.PlayerWarps
+main: xyz.oribuin.playerwarps.PlayerWarpsPlugin
 description: PlayerWarps plugin made for shits & giggles
-api-version: '1.13'
-version: '1.0'
+api-version: '1.16'
+version: '@version@'
 author: Oribuin
+libraries:
+  - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20
+  - dev.triumphteam:triumph-gui:3.1.4
 softdepend:
-  - Vault
   - PlaceholderAPI
+  - Vault
+  - PlayerPoints
+  - Treasury
+  - TokenManager
+
+permissions:
+  'playerwarps.*':
+    description: Allows the player to use all the plugin's features
+    default: op
+    children:
+      playerwarps.use: true
+      playerwarps.create: true
+      playerwarps.delete: true
+      playerwarps.teleport: true
+      'playerwarps.max.<number>': true
+
+  playerwarps.use:
+    description: Allows the player to use the plugin
+    default: true
+  playerwarps.create:
+    description: Allows the player to create a warp
+    default: false
+  playerwarps.delete:
+    description: Allows the player to delete a warp
+    default: false
+  playerwarps.teleport:
+    description: Allows the player to teleport to a warp
+    default: false
+  'playerwarps.max.<number>':
+    description: Allows the player to create a certain amount of warps
+    default: false
