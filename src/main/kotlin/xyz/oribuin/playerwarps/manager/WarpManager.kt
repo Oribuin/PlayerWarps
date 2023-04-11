@@ -233,7 +233,7 @@ class WarpManager(rosePlugin: RosePlugin) : Manager(rosePlugin) {
             }
 
             this.economyPlugin.withdraw(who, Setting.DELETE_WARP_PRICE.double)
-            this.rosePlugin.send(who, "command-delete-warp-success", StringPlaceholders.single("name", warp.name))
+            this.rosePlugin.send(who, "command-delete-success", StringPlaceholders.single("name", warp.name))
         }
 
     }

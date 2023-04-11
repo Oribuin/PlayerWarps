@@ -49,6 +49,7 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
                         )
 
                         warp.creationTime = resultSet.getLong("creation_time")
+                        warp.ownerName = resultSet.getString("owner_name")
                         this.warpCache[warp.id] = warp
                     }
                 }
@@ -67,8 +68,8 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
                     }
                 }
 
-                // Load the users for the warps
-                connection.prepareStatement("SELECT * FROM ${this.tablePrefix}users").use {
+                // Load the list of users for the warps
+                connection.prepareStatement("SELECT * FROM ${this.tablePrefix}lists").use {
                     val resultSet = it.executeQuery()
                     while (resultSet.next()) {
                         val warp = this.warpCache[resultSet.getInt("id")] ?: continue
@@ -92,6 +93,7 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
      */
     fun createNewWarp(name: String, owner: Player, location: Location, callback: Consumer<Warp>) {
         val warp = Warp(-1, name, owner.uniqueId, location)
+        warp.ownerName = owner.name // Set the owner name
         this.async {
             this.databaseConnector.connect { connection ->
 
@@ -206,7 +208,7 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
 
         this.async {
             this.databaseConnector.connect { connection ->
-                listOf("warps", "settings", "users")
+                listOf("warps", "settings", "lists")
                     .forEach {
                         connection.prepareStatement("DELETE FROM ${this.tablePrefix}$it WHERE id = ?").use { statement ->
                             statement.setInt(1, warp.id)
