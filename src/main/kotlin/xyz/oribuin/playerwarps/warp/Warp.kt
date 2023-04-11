@@ -10,7 +10,7 @@ data class Warp(var id: Int, var name: String, var owner: UUID, var location: Lo
     var description: MutableList<String> = mutableListOf() // The description of the warp
     var icon: ItemStack? = null // The icon of the warp
     var creationTime: Long = System.currentTimeMillis() // The time the warp was created
-    var isPublic: Boolean = false // If the warp is public
+    var isPublic: Boolean = true // If the warp is public
     var teleportFee: Double = 0.0 // The teleport fee of the warp
     var banned: MutableList<UUID> = mutableListOf() // The banned users of the warp
     var visitors: MutableList<UUID> = mutableListOf() // The visitors of the warp

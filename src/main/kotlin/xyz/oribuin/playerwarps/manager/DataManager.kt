@@ -12,7 +12,6 @@ import xyz.oribuin.playerwarps.util.ListSerializer.serialize
 import xyz.oribuin.playerwarps.util.WarpUtils.deserializeItem
 import xyz.oribuin.playerwarps.util.WarpUtils.serializeItem
 import xyz.oribuin.playerwarps.warp.Warp
-import java.sql.Connection
 import java.sql.Statement
 import java.util.*
 import java.util.function.Consumer
@@ -28,8 +27,10 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
         this.warpCache.clear()
         this.async {
             this.databaseConnector.connect { connection ->
-                connection.prepareStatement("SELECT * FROM ${this.tablePrefix}warps").use { statement ->
-                    val resultSet = statement.executeQuery()
+
+                // Load the primary data for the warp
+                connection.prepareStatement("SELECT * FROM ${this.tablePrefix}warps").use {
+                    val resultSet = it.executeQuery()
                     while (resultSet.next()) {
                         val loc = Location(
                             Bukkit.getServer().getWorld(resultSet.getString("world")),
@@ -47,16 +48,34 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
                             loc
                         )
 
+                        warp.creationTime = resultSet.getLong("creation_time")
+                        this.warpCache[warp.id] = warp
+                    }
+                }
+
+                // Load the settings for the warps
+                connection.prepareStatement("SELECT * FROM ${this.tablePrefix}settings").use {
+                    val resultSet = it.executeQuery()
+                    while (resultSet.next()) {
+                        val warp = this.warpCache[resultSet.getInt("id")] ?: continue
+
                         warp.displayName = resultSet.getString("display_name")
                         warp.description = deserialize(String::class, resultSet.getString("description")).toMutableList()
                         warp.icon = deserializeItem(resultSet.getBytes("icon"))
-                        warp.creationTime = resultSet.getLong("creation_time")
                         warp.isPublic = resultSet.getBoolean("public")
                         warp.teleportFee = resultSet.getDouble("teleportFee")
+                    }
+                }
+
+                // Load the users for the warps
+                connection.prepareStatement("SELECT * FROM ${this.tablePrefix}users").use {
+                    val resultSet = it.executeQuery()
+                    while (resultSet.next()) {
+                        val warp = this.warpCache[resultSet.getInt("id")] ?: continue
+
                         warp.banned = deserialize(UUID::class, resultSet.getString("banned")).toMutableList()
                         warp.visitors = deserialize(UUID::class, resultSet.getString("visitors")).toMutableList()
                         warp.likes = deserialize(UUID::class, resultSet.getString("likes")).toMutableList()
-                        warpCache[warp.id] = warp
                     }
                 }
             }
@@ -75,19 +94,22 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
         val warp = Warp(-1, name, owner.uniqueId, location)
         this.async {
             this.databaseConnector.connect { connection ->
-                val query =
-                    "INSERT INTO ${this.tablePrefix}warps (`id`, `name`, `owner`, `world`, `x`, `y`, `z`, `yaw`, `pitch`, `creation_time`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-                connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { statement ->
+                val createPrimary = "INSERT INTO ${this.tablePrefix}warps " +
+                        "(`id`, `name`, `owner`, `owner_name`, `world`, `x`, `y`, `z`, `yaw`, `pitch`, `creation_time`) " +
+                        "VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
+                connection.prepareStatement(createPrimary, Statement.RETURN_GENERATED_KEYS).use { statement ->
                     statement.setString(1, warp.name)
                     statement.setString(2, warp.owner.toString())
-                    statement.setString(3, location.world.name)
-                    statement.setDouble(4, location.x)
-                    statement.setDouble(5, location.y)
-                    statement.setDouble(6, location.z)
-                    statement.setFloat(7, location.yaw)
-                    statement.setFloat(8, location.pitch)
-                    statement.setLong(9, warp.creationTime)
+                    statement.setString(3, owner.name)
+                    statement.setString(4, location.world.name)
+                    statement.setDouble(5, location.x)
+                    statement.setDouble(6, location.y)
+                    statement.setDouble(7, location.z)
+                    statement.setFloat(8, location.yaw)
+                    statement.setFloat(9, location.pitch)
+                    statement.setLong(10, warp.creationTime)
                     statement.executeUpdate()
                     statement.generatedKeys.use {
                         if (it.next()) {
@@ -108,17 +130,28 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
      */
     fun saveWarp(warp: Warp) {
         this.warpCache[warp.id] = warp
+
         this.async {
-            databaseConnector.connect { connection: Connection ->
-                // oh boy that's ugly.
-                val query =
-                    "REPLACE INTO ${this.tablePrefix}warps (`id`, `name`, `owner`, `world`, `x`, `y`, `z`, `yaw`, `pitch`, `creation_time`, " +
-                            "`display_name`, `description`, `icon`, `public`, `banned`, `visitors`, `likes`) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                connection.prepareStatement(query).use { statement ->
-                    statement.setInt(1, warp.id)
-                    statement.setString(2, warp.name)
-                    statement.setString(3, warp.owner.toString())
+            this.databaseConnector.connect { connection ->
+
+                // Save the primary data for the warp
+                val primary = "UPDATE ${this.tablePrefix}warps SET " +
+                        "`name` = ?, " +
+                        "`owner` = ?, " +
+                        "`owner_name` = ?, " +
+                        "`world` = ?, " +
+                        "`x` = ?, " +
+                        "`y` = ?, " +
+                        "`z` = ?, " +
+                        "`yaw` = ?, " +
+                        "`pitch` = ?, " +
+                        "`creation_time` = ? " +
+                        "WHERE `id` = ?"
+
+                connection.prepareStatement(primary).use { statement ->
+                    statement.setString(1, warp.name)
+                    statement.setString(2, warp.owner.toString())
+                    statement.setString(3, warp.ownerName)
                     statement.setString(4, warp.location.world.name)
                     statement.setDouble(5, warp.location.x)
                     statement.setDouble(6, warp.location.y)
@@ -126,13 +159,37 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
                     statement.setFloat(8, warp.location.yaw)
                     statement.setFloat(9, warp.location.pitch)
                     statement.setLong(10, warp.creationTime)
-                    statement.setString(11, warp.displayName)
-                    statement.setString(12, serialize(warp.description))
-                    statement.setBytes(13, serializeItem(warp.icon))
-                    statement.setBoolean(14, warp.isPublic)
-                    statement.setString(15, serialize(warp.banned)) // i expect all of these to not work
-                    statement.setString(16, serialize(warp.visitors))
-                    statement.setString(17, serialize(warp.likes))
+                    statement.setInt(11, warp.id)
+                    statement.executeUpdate()
+                }
+
+
+                // Save the settings for the warp
+                val settings = "REPLACE INTO ${this.tablePrefix}settings " +
+                        "(`id`, `display_name`, `description`, `icon`, `public`, `teleportFee`) " +
+                        "VALUES (?, ?, ?, ?, ?, ?)"
+
+                connection.prepareStatement(settings).use { statement ->
+                    statement.setInt(1, warp.id)
+                    statement.setString(2, warp.displayName)
+                    statement.setString(3, serialize(warp.description))
+                    statement.setBytes(4, serializeItem(warp.icon))
+                    statement.setBoolean(5, warp.isPublic)
+                    statement.setDouble(6, warp.teleportFee)
+                    statement.executeUpdate()
+                }
+
+
+                // Save the lists for the warp
+                val lists = "REPLACE INTO ${this.tablePrefix}lists " +
+                        "(`id`, `banned`, `visitors`, `likes`) " +
+                        "VALUES (?, ?, ?, ?)"
+
+                connection.prepareStatement(lists).use { statement ->
+                    statement.setInt(1, warp.id)
+                    statement.setString(2, serialize(warp.banned))
+                    statement.setString(3, serialize(warp.visitors))
+                    statement.setString(4, serialize(warp.likes))
                     statement.executeUpdate()
                 }
             }
@@ -149,12 +206,14 @@ class DataManager(rosePlugin: RosePlugin) : AbstractDataManager(rosePlugin) {
 
         this.async {
             this.databaseConnector.connect { connection ->
-                connection.prepareStatement("DELETE FROM ${this.tablePrefix}warps WHERE id = ?").use { statement ->
-                    statement.setInt(1, warp.id)
-                    statement.executeUpdate()
-
-                    this.sync { callback.accept(warp) }
-                }
+                listOf("warps", "settings", "users")
+                    .forEach {
+                        connection.prepareStatement("DELETE FROM ${this.tablePrefix}$it WHERE id = ?").use { statement ->
+                            statement.setInt(1, warp.id)
+                            statement.executeUpdate()
+                        }
+                    }
+                    .let { this.sync { callback.accept(warp) } } // Run the callback on the main thread
             }
         }
     }

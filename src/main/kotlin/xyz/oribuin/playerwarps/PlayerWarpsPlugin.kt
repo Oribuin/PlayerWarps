@@ -3,9 +3,10 @@ package xyz.oribuin.playerwarps
 import dev.rosewood.rosegarden.RosePlugin
 import dev.rosewood.rosegarden.manager.Manager
 import dev.rosewood.rosegarden.utils.NMSUtil
-import xyz.oribuin.playerwarps.database.migration._1_CreateInitialTables
+import xyz.oribuin.playerwarps.gui.menu.MenuProvider
+import xyz.oribuin.playerwarps.hook.WarpPlaceholders
+import xyz.oribuin.playerwarps.listener.PlayerListener
 import xyz.oribuin.playerwarps.manager.*
-import kotlin.reflect.KClass
 
 class PlayerWarpsPlugin : RosePlugin(
     -1,
@@ -21,18 +22,31 @@ class PlayerWarpsPlugin : RosePlugin(
     }
 
     override fun enable() {
-        // Check if 1.16+
-        val pluginManager = this.server.pluginManager
+
+        // Check if the server is running 1.16.5 or above
         if (NMSUtil.getVersionNumber() < 16) {
             this.logger.severe("This plugin only supports version 1.16.5 and above, Please update your server if you wish to use this plugin.")
             this.logger.severe("Disabling plugin...")
-            pluginManager.disablePlugin(this)
+            this.server.pluginManager.disablePlugin(this)
             return
         }
 
         // Register Plugin Events
+        this.server.pluginManager.registerEvents(PlayerListener(this), this)
+
 
         // Register Placeholder Expansion
+        if (this.server.pluginManager.isPluginEnabled("PlaceholderAPI")) {
+            WarpPlaceholders(this).register() // Register the placeholders
+        }
+
+    }
+
+    override fun reload() {
+        super.reload()
+
+        MenuProvider.reload() // Reload the GUIs
+
     }
 
     override fun disable() {

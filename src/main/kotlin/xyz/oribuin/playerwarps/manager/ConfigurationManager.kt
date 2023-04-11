@@ -1,5 +1,6 @@
 package xyz.oribuin.playerwarps.manager
 
+
 import dev.rosewood.rosegarden.RosePlugin
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration
 import dev.rosewood.rosegarden.config.RoseSetting
@@ -15,6 +16,8 @@ class ConfigurationManager(rosePlugin: RosePlugin) : AbstractConfigurationManage
         // General Warp Settings
         DISABLED_WORLDS("disabled-worlds", emptyList<String>(), "A list of worlds where warps are disabled."),
         DISABLED_ICONS("disabled-icons", listOf(Material.BEDROCK.name), "A list of icons that are disabled."),
+        MIN_WARP_LIMIT("min-warp-limit", 1, "The minimum amount of warps a player can have."),
+        DATE_FORMAT("date-format", "dd/MMMM", "What format the date should be displayed in."),
 
         // Command Cooldown Settings
         COOLDOWNS("cooldowns", null, "The cooldowns for each command.", "Set each option as 0 to disable."),
