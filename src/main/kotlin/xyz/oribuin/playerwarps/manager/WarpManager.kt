@@ -4,17 +4,13 @@ import dev.rosewood.rosegarden.RosePlugin
 import dev.rosewood.rosegarden.manager.Manager
 import dev.rosewood.rosegarden.utils.NMSUtil
 import dev.rosewood.rosegarden.utils.StringPlaceholders
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
 import xyz.oribuin.playerwarps.hook.economy.EconomyPlugin
 import xyz.oribuin.playerwarps.manager.ConfigurationManager.Setting
 import xyz.oribuin.playerwarps.util.WarpUtils.add
 import xyz.oribuin.playerwarps.util.WarpUtils.center
 import xyz.oribuin.playerwarps.util.WarpUtils.getManager
-import xyz.oribuin.playerwarps.util.WarpUtils.getMaxWarps
 import xyz.oribuin.playerwarps.util.WarpUtils.parseEnum
 import xyz.oribuin.playerwarps.util.WarpUtils.send
 import xyz.oribuin.playerwarps.warp.Warp
@@ -94,7 +90,7 @@ class WarpManager(rosePlugin: RosePlugin) : Manager(rosePlugin) {
 
         // Check if the warp already exists
         if (this.getWarp(formattedName) != null) {
-            this.rosePlugin.send(owner, "command-create-warp-exists", StringPlaceholders.single("warp", name))
+            this.rosePlugin.send(owner, "command-create-exists", StringPlaceholders.single("warp", name))
             return
         }
 
@@ -240,6 +236,30 @@ class WarpManager(rosePlugin: RosePlugin) : Manager(rosePlugin) {
             this.rosePlugin.send(who, "command-delete-warp-success", StringPlaceholders.single("name", warp.name))
         }
 
+    }
+
+
+    /**
+     * Gets the maximum allowed warps a player can have
+     *
+     * @param player The player
+     * @return The amount of warps the player can have.
+     */
+    fun getMaxWarps(player: Player): Int {
+        var amount = Setting.MIN_WARP_LIMIT.int
+
+        for (info in player.effectivePermissions) {
+            val target = info.permission.lowercase(Locale.getDefault())
+            if (target.startsWith("playerwarps.max.") && info.value) {
+                amount = try {
+                    amount.coerceAtLeast(target.substring(target.lastIndexOf('.') + 1).toInt())
+                } catch (ignored: NumberFormatException) {
+                    Setting.MIN_WARP_LIMIT.int
+                }
+            }
+        }
+
+        return amount
     }
 
 }

@@ -11,10 +11,11 @@ class WarpsCommandWrapper(rosePlugin: RosePlugin) : RoseCommandWrapper(rosePlugi
 
     override fun getCommandPackages(): MutableList<String> = mutableListOf("xyz.oribuin.playerwarps.command.command")
 
-    override fun includeBaseCommand(): Boolean = true
+    override fun includeBaseCommand(): Boolean = false
 
     override fun includeHelpCommand(): Boolean = true
 
-    override fun includeReloadCommand(): Boolean = false
+    override fun includeReloadCommand(): Boolean = true
+
 
 }
