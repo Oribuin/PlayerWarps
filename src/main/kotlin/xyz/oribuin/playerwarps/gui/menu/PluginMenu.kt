@@ -21,7 +21,7 @@ abstract class PluginMenu(val rosePlugin: RosePlugin, private val menuName: Stri
 
     lateinit var config: CommentedFileConfiguration
 
-    fun load() {
+    open fun load() {
         val menuFile = createFile(this.rosePlugin, "guis", "$menuName.yml")
         this.config = CommentedFileConfiguration.loadConfiguration(menuFile)
         this.config.save(menuFile)

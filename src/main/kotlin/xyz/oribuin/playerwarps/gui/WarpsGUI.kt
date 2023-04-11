@@ -26,6 +26,13 @@ class WarpsGUI(rosePlugin: RosePlugin = PlayerWarpsPlugin.instance) : PluginMenu
 
     private val cachedWarps = mutableMapOf<Int, GuiItem>() // Cache the warp items to reduce load on gui open.
 
+    override fun load() {
+        super.load()
+
+        // Clear the cached warps when the gui is reloaded.
+        this.cachedWarps.clear()
+    }
+
     /**
      * Open the warp gui for a player.
      *
