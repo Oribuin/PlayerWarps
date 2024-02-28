@@ -19,13 +19,16 @@ command-help-list-description-no-args: " &8- &#00B4DB/%cmd% %subcmd% &7- &f%desc
 command-reload-description: "Reloads the plugin."
 command-reload-reloaded: "Configuration and locale files were reloaded"
 
-# Ban Command
+# Base Command Messages
+command-base-description: "Opens the main menu."
+
+# Ban Command Messages
 command-ban-description: "Ban a player from a warp."
 command-ban-success: "You have banned &#00B4DB%target%&f from your warp."
 command-ban-already-banned: "%target% is already banned from your warp."
 command-ban-self: "You cannot ban yourself from your warp."
 
-# Create Command
+# Create Command Messages
 command-create-description: 'Create a warp.'
 command-create-success: 'You have created a warp called &#00B4DB%warp%&f.'
 command-create-invalid-name: 'Invalid warp name. Warp names must be alphanumeric.'
@@ -33,44 +36,44 @@ command-create-already-exists: 'A warp with that name already exists.'
 command-create-confirm: 'Type the command again to create the warp, This will cost $%cost%.'
 command-create-max-warps: 'You have reached the maximum amount of warps that you can create.'
 
-# Delete Command
+# Delete Command Messages
 command-delete-description: 'Delete a warp.'
 command-delete-success: 'You have deleted the warp called &#00B4DB%warp%&f.'
 command-delete-confirm: 'Type the command again to delete &#00B4DB%warp%&f, This will cost $%cost%.'
 
-# Desc Command
+# Desc Command Messages
 command-desc-description: 'Set the description of a warp.'
 command-desc-success: 'You have changed the description of &#00B4DB%warp%&f.'
 command-desc-reset: 'You have reset the description of &#00B4DB%warp%&f.'
 command-desc-invalid: 'The description that you set is invalid.'
 
-# Icon Command
+# Icon Command Messages
 command-icon-description: 'Set the icon of a warp.'
 command-icon-success: 'You have changed the icon of &#00B4DB%warp%&f.'
 command-icon-cleared: 'You have cleared the icon of &#00B4DB%warp%&f.'
 
-# Name Command
+# Name Command Messages
 command-name-description: 'Set the display name of a warp.'
 command-name-success: 'You have changed &#00B4DB%warp%&f to be called &#00B4DB%name%&f.'
 command-name-invalid: 'The name that you set is invalid.'
 
-# Owner Command
+# Owner Command Messages
 command-owner-description: 'Set the owner of a warp.'
 command-owner-success: 'You have changed the owner of &#00B4DB%warp%&f to be &#00B4DB%target%&f.'
 command-owner-confirm: 'Type the command again if you want to change the owner of &#00B4DB%warp%&f to &#00B4DB%target%&f?'
 
-# Position Command
+# Position Command Messages
 command-position-description: 'Set the position of a warp.'
 command-position-success: 'You have changed the position of &#00B4DB%warp%&f.'
 command-position-unsafe: 'The position that you set is invalid.'
 
-# Teleport Command
+# Teleport Command Messages
 command-teleport-description: 'Teleport to a warp.'
 command-teleport-success: 'You have teleported to &#00B4DB%warp%&f.'
 command-teleport-confirm: 'Type the command again to teleport to &#00B4DB%warp%&f, This will cost $%cost%.'
 command-teleport-banned: 'You are banned from teleporting to &#00B4DB%warp%&f.'
 
-# Unban Command
+# Unban Command Messages
 command-unban-description: 'Unban a player from a warp.'
 command-unban-success: 'You have unbanned &#00B4DB%target%&f from your warp.'
 command-unban-not-banned: '%target% is not banned from your warp.'

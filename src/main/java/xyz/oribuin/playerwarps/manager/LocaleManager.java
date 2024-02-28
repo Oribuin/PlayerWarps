@@ -17,7 +17,6 @@ public class LocaleManager extends AbstractLocaleManager {
         super(rosePlugin);
     }
 
-
     /**
      * Send a message to a CommandSender
      *
