@@ -39,15 +39,15 @@ public class DeleteCommand extends BaseRoseCommand {
             return;
         }
 
-        // TODO: Add deletion cost
         VaultProvider provider = VaultProvider.get();
+        StringPlaceholders placeholders = StringPlaceholders.of("warp", warp.getId(), "cost", Setting.WARP_DELETE_COST.getDouble());
 
         // Make sure the player has enough funds
         if (Setting.WARP_DELETE_COST.getDouble() > 0 && !provider.has(player, Setting.WARP_DELETE_COST.getDouble())) {
 
             // Only require the player to have enough funds if they are not the owner of the warp
             if (warp.getOwner().equals(player.getUniqueId())) {
-                locale.sendMessage(player, "invalid-funds");
+                locale.sendMessage(player, "invalid-funds", placeholders);
                 return;
             }
         }
@@ -56,7 +56,7 @@ public class DeleteCommand extends BaseRoseCommand {
         if (this.toConfirm.remove(player.getUniqueId())) {
             DataManager manager = this.rosePlugin.getManager(DataManager.class);
             manager.delete(warp.getId());
-            locale.sendMessage(player, "command-delete-success");
+            locale.sendMessage(player, "command-delete-success", placeholders);
 
             if (Setting.WARP_DELETE_COST.getDouble() > 0) {
                 provider.take(player, Setting.WARP_DELETE_COST.getDouble());
@@ -66,7 +66,7 @@ public class DeleteCommand extends BaseRoseCommand {
         }
 
         this.toConfirm.add(player.getUniqueId());
-        locale.sendMessage(player, "command-delete-confirm", StringPlaceholders.of("warp", warp.getId()));
+        locale.sendMessage(player, "command-delete-confirm", placeholders);
     }
 
     @Override

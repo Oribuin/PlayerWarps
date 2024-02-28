@@ -48,7 +48,7 @@ public final class WarpUtils {
         for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
             final String target = info.getPermission().toLowerCase();
 
-            if (target.startsWith("playerwarps.limit.") && info.getValue()) {
+            if (target.startsWith("playerwarps.max.") && info.getValue()) {
                 try {
                     amount = Math.max(amount, Integer.parseInt(target.substring(target.lastIndexOf('.') + 1)));
                 } catch (NumberFormatException ignored) {

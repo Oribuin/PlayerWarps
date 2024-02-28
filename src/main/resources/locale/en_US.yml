@@ -31,6 +31,7 @@ command-create-success: 'You have created a warp called &#00B4DB%warp%&f.'
 command-create-invalid-name: 'Invalid warp name. Warp names must be alphanumeric.'
 command-create-already-exists: 'A warp with that name already exists.'
 command-create-confirm: 'Type the command again to create the warp, This will cost $%cost%.'
+command-create-max-warps: 'You have reached the maximum amount of warps that you can create.'
 
 # Delete Command
 command-delete-description: 'Delete a warp.'
