@@ -5,17 +5,12 @@ api-version: '1.16'
 version: '@version@'
 author: Oribuin
 libraries:
-  - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20
   - net.kyori:adventure-api:4.11.0
   - net.kyori:adventure-text-serializer-legacy:4.11.0
   - net.kyori:adventure-text-serializer-gson:4.11.0
 softdepend:
   - PlaceholderAPI
   - Vault
-  - PlayerPoints
-  - Treasury
-  - TokenManager
-
 permissions:
   'playerwarps.*':
     description: Allows the player to use all the plugin's features
