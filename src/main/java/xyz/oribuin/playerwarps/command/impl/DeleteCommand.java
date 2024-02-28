@@ -6,16 +6,22 @@ import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.entity.Player;
 import xyz.oribuin.playerwarps.command.argument.WarpArgumentHandler;
+import xyz.oribuin.playerwarps.hook.VaultProvider;
+import xyz.oribuin.playerwarps.manager.ConfigurationManager.Setting;
 import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.LocaleManager;
 import xyz.oribuin.playerwarps.model.Warp;
 
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class DeleteCommand extends BaseRoseCommand {
 
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
+    private final List<UUID> toConfirm = new ArrayList<>();
 
     public DeleteCommand(RosePlugin rosePlugin) {
         super(rosePlugin);
@@ -23,19 +29,44 @@ public class DeleteCommand extends BaseRoseCommand {
 
     @RoseExecutable
     public void execute(CommandContext context) {
+        LocaleManager locale = this.rosePlugin.getManager(LocaleManager.class);
         Player player = (Player) context.getSender();
         Warp warp = context.get("warp");
 
-        // TODO: Add locale messages
-
-        if (!warp.getOwner().equals(player.getUniqueId())) {
-            player.sendMessage("You cannot delete a warp that you do not own.");
+        // Check if the player is the owner of the warp
+        if (!warp.getOwner().equals(player.getUniqueId()) && !player.hasPermission("playerwarps.bypass")) {
+            locale.sendMessage(player, "not-warp-owner");
             return;
         }
 
-        DataManager manager = this.rosePlugin.getManager(DataManager.class);
-        manager.delete(warp.getId());
-        player.sendMessage("Warp deleted.");
+        // TODO: Add deletion cost
+        VaultProvider provider = VaultProvider.get();
+
+        // Make sure the player has enough funds
+        if (Setting.WARP_DELETE_COST.getDouble() > 0 && !provider.has(player, Setting.WARP_DELETE_COST.getDouble())) {
+
+            // Only require the player to have enough funds if they are not the owner of the warp
+            if (warp.getOwner().equals(player.getUniqueId())) {
+                locale.sendMessage(player, "invalid-funds");
+                return;
+            }
+        }
+
+        // If the player has already confirmed the deletion
+        if (this.toConfirm.remove(player.getUniqueId())) {
+            DataManager manager = this.rosePlugin.getManager(DataManager.class);
+            manager.delete(warp.getId());
+            locale.sendMessage(player, "command-delete-success");
+
+            if (Setting.WARP_DELETE_COST.getDouble() > 0) {
+                provider.take(player, Setting.WARP_DELETE_COST.getDouble());
+            }
+
+            return;
+        }
+
+        this.toConfirm.add(player.getUniqueId());
+        locale.sendMessage(player, "command-delete-confirm", StringPlaceholders.of("warp", warp.getId()));
     }
 
     @Override

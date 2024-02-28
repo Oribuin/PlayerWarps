@@ -1,55 +1,75 @@
 # en_US translation by Oribuin
-# Plugin Message Prefix
-prefix: <g:#00B4DB:#0083B0>&l{{PLUGIN_NAME}} &8| &f
+# Plugin Command Prefix
+prefix: "<g:#00B4DB:#0083B0>&lPlayerWarps &8| &f"
 
 # Generic Command Messages
-no-permission: '&fYou don''t have permission for that!'
-only-player: '&fThis command can only be executed by a player.'
-unknown-command: '&fUnknown command, use #00B4DB/%cmd% help &ffor more info.'
-unknown-command-error: '&cAn unknown error occurred; details have been printed to console. Please contact a server administrator.'
-invalid-subcommand: '&fInvalid subcommand.'
-invalid-argument: '&fInvalid argument: #00B4DB%message%&f.'
-invalid-argument-null: '&fInvalid argument: #00B4DB%name% &fwas null.'
-missing-arguments: '&fMissing arguments, #00B4DB%amount% &frequired.'
-missing-arguments-extra: '&fMissing arguments, #00B4DB%amount%+ &frequired.'
+no-permission: "You do not have permission to do that!"
+only-player: "This command can only be executed by a player!"
+unknown-command: "Unknown command, use #00B4DB/%cmd%&f help for more info"
+invalid-funds: "You do not have enough funds to do that!"
+not-warp-owner: "You cannot change a warp that you don't own."
 
-# Base Command Message
-base-command-color: '#00B4DB'
-base-command-help: '&fUse #00B4DB/%cmd% help &ffor command information.'
+# Help Command Messages
+command-help-title: "Available Commands:"
+command-help-description: "Displays the help menu"
+command-help-list-description: " &8- &#00B4DB/%cmd% %subcmd% %args% &7- &f%desc%"
+command-help-list-description-no-args: " &8- &#00B4DB/%cmd% %subcmd% &7- &f%desc%"
+
+# Reload Command Messages
+command-reload-description: "Reloads the plugin."
+command-reload-reloaded: "Configuration and locale files were reloaded"
+
+# Ban Command
+command-ban-description: "Ban a player from a warp."
+command-ban-success: "You have banned &#00B4DB%target%&f from your warp."
+command-ban-already-banned: "%target% is already banned from your warp."
+command-ban-self: "You cannot ban yourself from your warp."
 
 # Create Command
-command-create-description: Create a new player warp.
-command-create-success: 'You have successfully created the warp #00B4DB%warp%'
-command-create-exists: 'The warp #00B4DB%warp% &falready exists.'
-command-create-disabled-world: 'You cannot create a warp in this world.'
-command-create-limit: 'You can only create #00B4DB%limit% &fwarps'
-command-create-cost: 'You do not have enough money to create this warp. It costs #00B4DB%cost%'
-command-create-cooldown: 'You cannot create a warp for #00B4DB%cooldown% &fmore seconds.'
+command-create-description: 'Create a warp.'
+command-create-success: 'You have created a warp called &#00B4DB%warp%&f.'
+command-create-invalid-name: 'Invalid warp name. Warp names must be alphanumeric.'
+command-create-already-exists: 'A warp with that name already exists.'
+command-create-confirm: 'Type the command again to create the warp, This will cost $%cost%.'
 
 # Delete Command
-command-delete-description: Delete a player warp.
-command-delete-success: 'You have successfully deleted the warp #00B4DB%warp%'
-command-delete-not-owner: 'You do not own the warp #00B4DB%warp%'
-command-delete-cooldown: 'You cannot delete a warp for #00B4DB%cooldown% &fmore seconds.'
-command-delete-cost: 'You do not have enough money to delete this warp. It costs #00B4DB%cost%'
+command-delete-description: 'Delete a warp.'
+command-delete-success: 'You have deleted the warp called &#00B4DB%warp%&f.'
+command-delete-confirm: 'Type the command again to delete &#00B4DB%warp%&f, This will cost $%cost%.'
+
+# Desc Command
+command-desc-description: 'Set the description of a warp.'
+command-desc-success: 'You have changed the description of &#00B4DB%warp%&f.'
+command-desc-reset: 'You have reset the description of &#00B4DB%warp%&f.'
+command-desc-invalid: 'The description that you set is invalid.'
+
+# Icon Command
+command-icon-description: 'Set the icon of a warp.'
+command-icon-success: 'You have changed the icon of &#00B4DB%warp%&f.'
+command-icon-cleared: 'You have cleared the icon of &#00B4DB%warp%&f.'
+
+# Name Command
+command-name-description: 'Set the display name of a warp.'
+command-name-success: 'You have changed &#00B4DB%warp%&f to be called &#00B4DB%name%&f.'
+command-name-invalid: 'The name that you set is invalid.'
+
+# Owner Command
+command-owner-description: 'Set the owner of a warp.'
+command-owner-success: 'You have changed the owner of &#00B4DB%warp%&f to be &#00B4DB%target%&f.'
+command-owner-confirm: 'Type the command again if you want to change the owner of &#00B4DB%warp%&f to &#00B4DB%target%&f?'
+
+# Position Command
+command-position-description: 'Set the position of a warp.'
+command-position-success: 'You have changed the position of &#00B4DB%warp%&f.'
+command-position-unsafe: 'The position that you set is invalid.'
 
 # Teleport Command
-command-teleport-description: Teleport to a player warp.
-command-teleport-success: 'You have successfully teleported to the warp #00B4DB%warp%'
-command-teleport-cost: 'You do not have enough money to teleport to this warp. It costs #00B4DB%cost%'
-command-teleport-cooldown: 'You cannot teleport to a warp for #00B4DB%cooldown% &fmore seconds.'
-command-teleport-disabled-world: 'You cannot teleport to a warp in this world.'
-command-teleport-banned: 'You cannot teleport to this warp because you are banned.'
+command-teleport-description: 'Teleport to a warp.'
+command-teleport-success: 'You have teleported to &#00B4DB%warp%&f.'
+command-teleport-confirm: 'Type the command again to teleport to &#00B4DB%warp%&f, This will cost $%cost%.'
+command-teleport-banned: 'You are banned from teleporting to &#00B4DB%warp%&f.'
 
-# Reload Command
-command-reload-description: Reloads the plugin.
-command-reload-reloaded: Configuration and locale files were reloaded
-
-# Help Command
-command-help-title: '&fAvailable Commands:'
-command-help-description: Displays the help menu.
-command-help-list-description: '&8 - #00B4DB/%cmd% %subcmd% %args% &7- %desc%'
-command-help-list-description-no-args: '&8 - #00B4DB/%cmd% %subcmd% &7- %desc%'
-
-# Argument Handler Error Messages
-argument-handler-warp: 'No warp with the name #00B4DB%input% &fwas found.'
+# Unban Command
+command-unban-description: 'Unban a player from a warp.'
+command-unban-success: 'You have unbanned &#00B4DB%target%&f from your warp.'
+command-unban-not-banned: '%target% is not banned from your warp.'

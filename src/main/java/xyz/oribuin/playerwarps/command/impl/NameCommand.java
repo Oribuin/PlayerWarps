@@ -7,10 +7,11 @@ import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.entity.Player;
 import xyz.oribuin.playerwarps.command.argument.WarpArgumentHandler;
 import xyz.oribuin.playerwarps.manager.ConfigurationManager.Setting;
-import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.LocaleManager;
 import xyz.oribuin.playerwarps.model.Warp;
 
 import java.util.List;
@@ -25,23 +26,27 @@ public class NameCommand extends BaseRoseCommand {
 
     @RoseExecutable
     public void execute(CommandContext context) {
+        LocaleManager locale = this.rosePlugin.getManager(LocaleManager.class);
         Player player = (Player) context.getSender();
         Warp warp = context.get("warp");
         String name = context.get("name");
 
-        if (!warp.getOwner().equals(player.getUniqueId())) {
-            player.sendMessage("You don't own this warp");
+        // Check if the player is the owner of the warp
+        if (!warp.getOwner().equals(player.getUniqueId()) && !player.hasPermission("playerwarps.bypass")) {
+            locale.sendMessage(player, "not-warp-owner");
             return;
         }
 
+        // Make sure the name is not too long
         if (this.getPatterns().stream().anyMatch(p -> p.matcher(name).matches())) {
-            player.sendMessage("Invalid name");
+            locale.sendMessage(player, "command-name-invalid");
             return;
         }
 
+        // Change the name
         warp.setDisplayName(name);
         warp.save();
-        player.sendMessage("Set name for " + warp.getId());
+        locale.sendMessage(player, "command-name-success", StringPlaceholders.of("warp", warp.getId(), "name", name));
     }
 
     public List<Pattern> getPatterns() {

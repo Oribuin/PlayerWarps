@@ -7,10 +7,11 @@ import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import xyz.oribuin.playerwarps.command.argument.WarpArgumentHandler;
-import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.LocaleManager;
 import xyz.oribuin.playerwarps.model.Warp;
 
 public class UnbanCommand extends BaseRoseCommand {
@@ -21,23 +22,28 @@ public class UnbanCommand extends BaseRoseCommand {
 
     @RoseExecutable
     public void execute(CommandContext context) {
+        LocaleManager locale = this.rosePlugin.getManager(LocaleManager.class);
         Player player = (Player) context.getSender();
-        Warp warp = context.get("warp");
         OfflinePlayer target = context.get("target");
+        Warp warp = context.get("warp");
 
-        if (!warp.getOwner().equals(player.getUniqueId())) {
-            player.sendMessage("You don't own this warp");
+        // Check if the player is the owner of the warp
+        if (!warp.getOwner().equals(player.getUniqueId()) && !player.hasPermission("playerwarps.bypass")) {
+            locale.sendMessage(player, "not-warp-owner");
             return;
         }
 
+        StringPlaceholders placeholders = StringPlaceholders.of("target", target.getName(), "warp", warp.getId());
+
+        // Check if the player is already banned
         if (!warp.isBanned(target)) {
-            player.sendMessage("Player is not banned from " + warp.getId());
+            locale.sendMessage(player, "command-unban-not-banned", placeholders);
             return;
         }
 
         warp.getBanned().remove(target.getUniqueId());
         warp.save();
-        player.sendMessage("Unbanned " + target.getName() + " from " + warp.getId());
+        locale.sendMessage(player, "command-unban-success", placeholders);
     }
 
     @Override

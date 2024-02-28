@@ -67,14 +67,14 @@ public class Warp {
      * @return If the teleport was successful
      */
     public boolean teleport(Player player) {
-        if (this.banned.contains(player.getUniqueId())) {
-            // TODO: Player is banned
-            return false;
-        }
+        if (player == null || !player.isOnline() || player.isSleeping()) return false;
+        if (this.position.getBlock().isLiquid()) return false;
 
-        if (this.teleportFee > 0) {
-            // TODO: Charge the player
-            return true;
+        if (!this.visitors.contains(player.getUniqueId())) {
+            this.visitors.add(player.getUniqueId());
+
+            // Update the warp in the database
+            PlayerWarpsPlugin.get().getManager(DataManager.class).cache(this);
         }
 
         // Teleport Player

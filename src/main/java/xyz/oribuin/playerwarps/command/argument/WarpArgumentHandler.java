@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.command.framework.Argument;
 import dev.rosewood.rosegarden.command.framework.ArgumentHandler;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.InputIterator;
+import org.bukkit.entity.Player;
 import xyz.oribuin.playerwarps.PlayerWarpsPlugin;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.model.Warp;
@@ -32,11 +33,16 @@ public class WarpArgumentHandler extends ArgumentHandler<Warp> {
 
     @Override
     public List<String> suggest(CommandContext context, Argument argument, String[] args) {
-        return PlayerWarpsPlugin.get().getManager(DataManager.class)
-                .getWarps()
-                .keySet()
-                .stream()
-                .toList();
+        DataManager manager = PlayerWarpsPlugin.get().getManager(DataManager.class);
+
+        if (context.getSender() instanceof Player player && !player.hasPermission("playerwarps.bypass")) {
+            return manager.getOwned(player.getUniqueId())
+                    .stream()
+                    .map(Warp::getId)
+                    .toList();
+        }
+
+        return manager.getWarps().keySet().stream().toList();
     }
 
 }

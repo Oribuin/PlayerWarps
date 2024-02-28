@@ -65,7 +65,7 @@ public class WarpsMenu extends PluginMenu {
             this.manager.getWarps().forEach((s, warp) -> {
                 StringPlaceholders placeholders = this.getWarpPlaceholders(warp);
                 ItemStack warpIcon = WarpUtils.deserialize(this.config, player, "warp-icon", placeholders);
-                if (warpIcon == null) warpIcon = warp.getIcon();
+                if (warp.getIcon() != null) warpIcon = warp.getIcon();
                 if (warpIcon == null) return;
 
                 List<String> configLore = this.config.getStringList("warp-icon.lore");
@@ -76,6 +76,8 @@ public class WarpsMenu extends PluginMenu {
                         newLore.add(this.locale.format(player, configLine, placeholders));
                         continue;
                     }
+
+                    if (warp.getDescription().isEmpty()) continue;
 
                     // Add the description to the lore
                     warp.getDescription().forEach(line -> newLore.add(this.locale.format(player, line, placeholders)));

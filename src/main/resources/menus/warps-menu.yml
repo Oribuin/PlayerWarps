@@ -13,7 +13,7 @@ warp-icon:
   amount: 1
   name: '#00B4DB&l%warp_name%'
   lore:
-    - ''
+    - '%warp_description%'
     - ' &f| &7Owner: #00B4DB%warp_owner%'
     - ' &f| &7Location: #00B4DB%warp_location%'
     - ' &f| &7Teleport Cost: #00B4DB%warp_price%'

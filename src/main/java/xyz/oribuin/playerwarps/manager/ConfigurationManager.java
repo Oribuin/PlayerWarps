@@ -21,9 +21,14 @@ public class ConfigurationManager extends AbstractConfigurationManager {
     }
 
     public enum Setting implements RoseSetting {
+        DISABLED_WORLDS("disabled-worlds", List.of("disabled-world-1"), "Here you can configure the worlds that warps are disabled in."),
+
         WARP_SETTINGS("warp-settings", null, "Here you can configure the settings for warps."),
-        WARP_NAME_FILTERS("warp-settings.name-filters", List.of("\\b(f+(\\W|\\d|_)*(a|@)+(\\W|\\d|_)*g+(\\W|\\d|_)*)\\b"), "T"),
-        WARP_DESC_FILTERS("warp-settings.desc-filters", List.of("\\b(f+(\\W|\\d|_)*(a|@)+(\\W|\\d|_)*g+(\\W|\\d|_)*)\\b"), "T"),
+        WARP_CREATE_COST("warp-settings.create-cost", 500.0, "The cost to create a warp.", "Uses vault as the economy provider."),
+        WARP_DELETE_COST("warp-settings.delete-cost", 500.0, "The cost to delete a warp.", "Uses vault as the economy provider."),
+        WARP_DESC_FILTERS("warp-settings.desc-filters", List.of("\\b(f+(\\W|\\d|_)*(a|@)+(\\W|\\d|_)*g+(\\W|\\d|_)*)\\b"), "If any of these patterns are matched, the warp description will be invalid."),
+        WARP_NAME_FILTERS("warp-settings.name-filters", List.of("\\b(f+(\\W|\\d|_)*(a|@)+(\\W|\\d|_)*g+(\\W|\\d|_)*)\\b"), "If any of these patterns are matched, the warp name will be invalid."),
+
         ;
 
         private final String key;

@@ -7,11 +7,11 @@ import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import xyz.oribuin.playerwarps.command.argument.WarpArgumentHandler;
-import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.LocaleManager;
 import xyz.oribuin.playerwarps.model.Warp;
 
 public class BanCommand extends BaseRoseCommand {
@@ -22,28 +22,32 @@ public class BanCommand extends BaseRoseCommand {
 
     @RoseExecutable
     public void execute(CommandContext context) {
+        LocaleManager locale = this.rosePlugin.getManager(LocaleManager.class);
         Player player = (Player) context.getSender();
-        Warp warp = context.get("warp");
         OfflinePlayer target = context.get("target");
-        
-        if (!warp.getOwner().equals(player.getUniqueId())) {
-            player.sendMessage("You don't own this warp");
+        Warp warp = context.get("warp");
+
+        // Check if the player is the owner of the warp
+        if (!warp.getOwner().equals(player.getUniqueId()) && !player.hasPermission("playerwarps.bypass")) {
+            locale.sendMessage(player, "not-warp-owner");
             return;
         }
-        
+
+        // Check if the player is already banned
         if (warp.isBanned(target)) {
-            player.sendMessage("Player is already banned from " + warp.getId());
+            locale.sendMessage(player, "command-ban-already-banned", StringPlaceholders.of("target", target.getName()));
             return;
         }
-        
+
+        // Don't allow the owner to ban themselves
         if (warp.getOwner().equals(target.getUniqueId())) {
-            player.sendMessage("You cannot ban the owner of " + warp.getId());
+            locale.sendMessage(player, "command-ban-self");
             return;
         }
-        
+
         warp.getBanned().add(target.getUniqueId());
         warp.save();
-        player.sendMessage("Banned " + target.getName() + " from " + warp.getId());
+        locale.sendMessage(player, "command-ban-success", StringPlaceholders.of("target", target.getName(), "warp", warp.getId()));
     }
 
     @Override

@@ -7,10 +7,11 @@ import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.entity.Player;
 import xyz.oribuin.playerwarps.command.argument.WarpArgumentHandler;
 import xyz.oribuin.playerwarps.manager.ConfigurationManager.Setting;
-import xyz.oribuin.playerwarps.manager.DataManager;
+import xyz.oribuin.playerwarps.manager.LocaleManager;
 import xyz.oribuin.playerwarps.model.Warp;
 
 import java.util.ArrayList;
@@ -27,30 +28,35 @@ public class DescCommand extends BaseRoseCommand {
 
     @RoseExecutable
     public void execute(CommandContext context) {
+        LocaleManager locale = this.rosePlugin.getManager(LocaleManager.class);
         Player player = (Player) context.getSender();
         Warp warp = context.get("warp");
         String desc = context.get("desc");
 
-        if (!warp.getOwner().equals(player.getUniqueId())) {
-            player.sendMessage("You don't own this warp");
+        // Check if the player is the owner of the warp
+        if (!warp.getOwner().equals(player.getUniqueId()) && !player.hasPermission("playerwarps.bypass")) {
+            locale.sendMessage(player, "not-warp-owner");
             return;
         }
 
+        // If a description is not provided, reset the description
         if (desc == null) {
             warp.setDescription(new ArrayList<>());
             warp.save();
-            player.sendMessage("Removed description for " + warp.getId());
+            locale.sendMessage(player, "comamnd-desc-reset", StringPlaceholders.of("warp", warp.getId()));
             return;
         }
 
+        // Check if the description is valid
         if (this.getPatterns().stream().anyMatch(p -> p.matcher(desc).matches())) {
-            player.sendMessage("Invalid name");
+            locale.sendMessage(player, "command-desc-invalid", StringPlaceholders.of("warp", warp.getId()));
             return;
         }
 
+        // Set the description
         warp.setDescription(Arrays.stream(desc.split("\n")).toList());
         warp.save();
-        player.sendMessage("Set description for " + warp.getId());
+        locale.sendMessage(player, "command-desc-success", StringPlaceholders.of("warp", warp.getId()));
     }
 
     public List<Pattern> getPatterns() {

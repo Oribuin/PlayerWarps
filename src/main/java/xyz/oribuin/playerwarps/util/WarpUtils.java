@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,30 @@ import java.util.Map;
 import static org.apache.commons.lang.math.NumberUtils.toInt;
 
 public final class WarpUtils {
+
+    /**
+     * Get the maximum amount of warps a player can have open
+     *
+     * @param player the player to check
+     * @return the maximum amount of warps a player can have open
+     */
+    public static int getMaxWarps(Player player) {
+        int amount = 1;
+        for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
+            final String target = info.getPermission().toLowerCase();
+
+            if (target.startsWith("playerwarps.limit.") && info.getValue()) {
+                try {
+                    amount = Math.max(amount, Integer.parseInt(target.substring(target.lastIndexOf('.') + 1)));
+                } catch (NumberFormatException ignored) {
+                    // Ignore
+                }
+            }
+        }
+
+        return amount;
+    }
+
 
     /**
      * Get an enum from a string value
@@ -271,5 +296,43 @@ public final class WarpUtils {
 
         return newList;
     }
+
+    /**
+     * Parse a time string into milliseconds
+     *
+     * @param time The time string
+     * @return The time in milliseconds
+     */
+    public static long parseTime(String time) {
+        String[] parts = time.split(" ");
+        long totalSeconds = 0;
+
+        for (String part : parts) {
+
+            // get the last character
+            char lastChar = part.charAt(part.length() - 1);
+            String num = part.substring(0, part.length() - 1);
+            if (num.isEmpty())
+                continue;
+
+            int amount;
+            try {
+                amount = Integer.parseInt(num);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+
+            switch (lastChar) {
+                case 'w' -> totalSeconds += amount * 604800L;
+                case 'd' -> totalSeconds += amount * 86400L;
+                case 'h' -> totalSeconds += amount * 3600L;
+                case 'm' -> totalSeconds += amount * 60L;
+                case 's' -> totalSeconds += amount;
+            }
+        }
+
+        return totalSeconds * 1000;
+    }
+
 
 }
