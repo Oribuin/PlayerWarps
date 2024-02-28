@@ -44,7 +44,6 @@ public class DataManager extends AbstractDataManager {
     public void cache(Warp warp) {
         if (warp == null) return;
 
-
         this.warps.put(warp.getId(), warp);
     }
 
@@ -77,7 +76,7 @@ public class DataManager extends AbstractDataManager {
      *
      * @param warp The warp to update
      */
-    public void update(Warp warp) {
+    public void save(Warp warp) {
         this.warps.put(warp.getId(), warp);
 
         this.async(() -> this.databaseConnector.connect(connection -> {

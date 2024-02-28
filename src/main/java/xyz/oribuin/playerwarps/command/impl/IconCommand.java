@@ -7,12 +7,14 @@ import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import xyz.oribuin.playerwarps.command.argument.WarpArgumentHandler;
 import xyz.oribuin.playerwarps.manager.DataManager;
 import xyz.oribuin.playerwarps.model.Warp;
 
-public class TeleportCommand extends BaseRoseCommand {
-    public TeleportCommand(RosePlugin rosePlugin) {
+public class IconCommand extends BaseRoseCommand {
+
+    public IconCommand(RosePlugin rosePlugin) {
         super(rosePlugin);
     }
 
@@ -21,29 +23,29 @@ public class TeleportCommand extends BaseRoseCommand {
         Player player = (Player) context.getSender();
         Warp warp = context.get("warp");
 
-        // TODO: Add locale messages
-
-        DataManager manager = this.rosePlugin.getManager(DataManager.class);
-        // TODO: Check if the player is banned
-        if (warp.isBanned(player)) {
-            player.sendMessage("You are banned from " + warp.getId());
+        if (!warp.getOwner().equals(player.getUniqueId())) {
+            player.sendMessage("You don't own this warp");
             return;
         }
 
-        // TODO: Check if the player can afford to teleport
-        // TODO: Check if the player is in cooldown?
+        ItemStack handIcon = player.getInventory().getItemInMainHand();
+        if (handIcon.getType().isAir()) {
+            warp.setIcon(null);
+            warp.save();
+            player.sendMessage("removed icon from " + warp.getId());
+            return;
+        }
 
-
-        warp.teleport(player);
-        player.sendMessage("teleported to " + warp.getId());
+        warp.setIcon(handIcon);
+        warp.save();
+        player.sendMessage("set icon for " + warp.getId());
     }
 
     @Override
     protected CommandInfo createCommandInfo() {
-        return CommandInfo.builder("teleport")
-                .descriptionKey("command-teleport-description")
-                .permission("playerwarps.teleport")
-                // todo: playeronly
+        return CommandInfo.builder("icon")
+                .descriptionKey("command-icon-description")
+                .permission("playerwarps.icon")
                 .build();
     }
 

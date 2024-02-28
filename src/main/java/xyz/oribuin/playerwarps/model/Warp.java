@@ -3,11 +3,14 @@ package xyz.oribuin.playerwarps.model;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.oribuin.playerwarps.PlayerWarpsPlugin;
+import xyz.oribuin.playerwarps.manager.DataManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +54,13 @@ public class Warp {
     }
 
     /**
+     * Update the warp in the database
+     */
+    public void save() {
+        PlayerWarpsPlugin.get().getManager(DataManager.class).save(this);
+    }
+
+    /**
      * Teleport a player to the designated player warp
      *
      * @param player The player to teleport
@@ -71,6 +81,15 @@ public class Warp {
         player.setFallDistance(0);
         player.setVelocity(player.getVelocity().setY(0));
         return PaperLib.teleportAsync(player, this.position, PlayerTeleportEvent.TeleportCause.PLUGIN).isDone();
+    }
+
+    /**
+     * Check if a player is banned from teleporting to a warp.
+     *
+     * @param player The player to check
+     */
+    public boolean isBanned(OfflinePlayer player) {
+        return this.banned.contains(player.getUniqueId());
     }
 
     public @NotNull String getId() {
@@ -164,6 +183,5 @@ public class Warp {
     public void setTeleportFee(double teleportFee) {
         this.teleportFee = teleportFee;
     }
-
 
 }

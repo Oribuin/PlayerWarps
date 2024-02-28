@@ -35,7 +35,6 @@ public class DeleteCommand extends BaseRoseCommand {
 
         DataManager manager = this.rosePlugin.getManager(DataManager.class);
         manager.delete(warp.getId());
-
         player.sendMessage("Warp deleted.");
     }
 

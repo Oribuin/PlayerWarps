@@ -9,9 +9,16 @@ import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import org.bukkit.entity.Player;
 import xyz.oribuin.playerwarps.command.defaults.WarpHelpCommand;
 import xyz.oribuin.playerwarps.command.defaults.WarpReloadCommand;
+import xyz.oribuin.playerwarps.command.impl.BanCommand;
 import xyz.oribuin.playerwarps.command.impl.CreateCommand;
 import xyz.oribuin.playerwarps.command.impl.DeleteCommand;
+import xyz.oribuin.playerwarps.command.impl.DescCommand;
+import xyz.oribuin.playerwarps.command.impl.IconCommand;
+import xyz.oribuin.playerwarps.command.impl.NameCommand;
+import xyz.oribuin.playerwarps.command.impl.OwnerCommand;
+import xyz.oribuin.playerwarps.command.impl.PositionCommand;
 import xyz.oribuin.playerwarps.command.impl.TeleportCommand;
+import xyz.oribuin.playerwarps.command.impl.UnbanCommand;
 import xyz.oribuin.playerwarps.gui.MenuProvider;
 import xyz.oribuin.playerwarps.gui.menu.WarpsMenu;
 
@@ -43,9 +50,16 @@ public class BaseCommand extends BaseRoseCommand {
                 new WarpReloadCommand(this.rosePlugin),
 
                 // Plugin Commands
+                new BanCommand(this.rosePlugin),
                 new CreateCommand(this.rosePlugin),
                 new DeleteCommand(this.rosePlugin),
-                new TeleportCommand(this.rosePlugin)
+                new DescCommand(this.rosePlugin),
+                new IconCommand(this.rosePlugin),
+                new NameCommand(this.rosePlugin),
+                new OwnerCommand(this.rosePlugin),
+                new PositionCommand(this.rosePlugin),
+                new TeleportCommand(this.rosePlugin),
+                new UnbanCommand(this.rosePlugin)
         );
     }
 

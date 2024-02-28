@@ -7,6 +7,8 @@ import dev.rosewood.rosegarden.config.RoseSetting;
 import dev.rosewood.rosegarden.manager.AbstractConfigurationManager;
 import xyz.oribuin.playerwarps.PlayerWarpsPlugin;
 
+import java.util.List;
+
 public class ConfigurationManager extends AbstractConfigurationManager {
 
     public ConfigurationManager(RosePlugin rosePlugin) {
@@ -19,6 +21,9 @@ public class ConfigurationManager extends AbstractConfigurationManager {
     }
 
     public enum Setting implements RoseSetting {
+        WARP_SETTINGS("warp-settings", null, "Here you can configure the settings for warps."),
+        WARP_NAME_FILTERS("warp-settings.name-filters", List.of("\\b(f+(\\W|\\d|_)*(a|@)+(\\W|\\d|_)*g+(\\W|\\d|_)*)\\b"), "T"),
+        WARP_DESC_FILTERS("warp-settings.desc-filters", List.of("\\b(f+(\\W|\\d|_)*(a|@)+(\\W|\\d|_)*g+(\\W|\\d|_)*)\\b"), "T"),
         ;
 
         private final String key;
