@@ -161,7 +161,7 @@ public class DataManager extends AbstractDataManager {
      * Load all the warps from the plugin database
      * This method is called when the plugin is enabled
      */
-    public void loadWarps() {
+    private void loadWarps() {
         this.warps.clear();
 
         this.async(() -> this.databaseConnector.connect(connection -> {
@@ -237,7 +237,7 @@ public class DataManager extends AbstractDataManager {
      * @param runnable The runnable to run async
      */
     private void async(Runnable runnable) {
-        PlayerWarpsPlugin.PAPER
+        PlayerWarpsPlugin.SCHEDULER
                 .scheduling()
                 .asyncScheduler()
                 .run(runnable);

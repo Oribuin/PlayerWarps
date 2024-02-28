@@ -3,6 +3,7 @@ package xyz.oribuin.playerwarps;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import space.arim.morepaperlib.MorePaperLib;
+import xyz.oribuin.playerwarps.gui.MenuProvider;
 import xyz.oribuin.playerwarps.manager.CommandManager;
 import xyz.oribuin.playerwarps.manager.ConfigurationManager;
 import xyz.oribuin.playerwarps.manager.DataManager;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class PlayerWarpsPlugin extends RosePlugin {
 
-    public static MorePaperLib PAPER;
+    public static MorePaperLib SCHEDULER;
     private static PlayerWarpsPlugin instance;
 
     public PlayerWarpsPlugin() {
@@ -26,12 +27,19 @@ public class PlayerWarpsPlugin extends RosePlugin {
         );
 
         instance = this;
-        PAPER = new MorePaperLib(this);
+        SCHEDULER = new MorePaperLib(this);
     }
 
     @Override
     public void enable() {
 
+    }
+
+    @Override
+    public void reload() {
+        super.reload();
+
+        MenuProvider.reload();
     }
 
     @Override

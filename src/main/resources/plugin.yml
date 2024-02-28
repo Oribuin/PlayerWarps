@@ -11,10 +11,6 @@ libraries:
 softdepend:
   - PlaceholderAPI
   - Vault
-  - PlayerPoints
-  - Treasury
-  - TokenManager
-
 permissions:
   'playerwarps.*':
     description: Allows the player to use all the plugin's features
