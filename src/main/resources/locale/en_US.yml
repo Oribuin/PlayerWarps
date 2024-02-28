@@ -74,3 +74,8 @@ command-teleport-banned: 'You are banned from teleporting to &#00B4DB%warp%&f.'
 command-unban-description: 'Unban a player from a warp.'
 command-unban-success: 'You have unbanned &#00B4DB%target%&f from your warp.'
 command-unban-not-banned: '%target% is not banned from your warp.'
+
+# Argument Handler Messages
+argument-handler-warp: 'The warp that you specified does not exist.'
+argument-handler-player: 'Please provide a valid player name.'
+argument-handler-string: 'Please provide a valid string.'
