@@ -107,6 +107,7 @@ public class WarpsMenu extends PluginMenu {
                 .add("warp_owner", warp.getOwnerName())
                 .add("warp_price", String.valueOf(warp.getTeleportFee()))
                 .add("warp_location", this.formatLocation(warp.getPosition()))
+                .add("warp_creation", WarpUtils.getDate(warp.getCreationTime()))
                 .build();
     }
 

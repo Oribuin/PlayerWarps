@@ -80,8 +80,8 @@ public class DataManager extends AbstractDataManager {
         this.warps.put(warp.getId(), warp);
 
         this.async(() -> this.databaseConnector.connect(connection -> {
-            String updatePrimary = "REPLACE INTO " + this.getTablePrefix() + "warpS (`id`, `owner`, `owner_name`, `created`, `x`, `y`, `z`, `yaw`, `pitch`, `world`)" +
-                                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String updatePrimary = "REPLACE INTO " + this.getTablePrefix() + "warps (`id`, `owner`, `owner_name`, `created`, `x`, `y`, `z`, `yaw`, `pitch`, `world`, `last_upkeep`)" +
+                                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             String updateSettings = "REPLACE INTO " + this.getTablePrefix() + "settings (`id`, `display_name`, `description`, `public`, `teleport_cost`, `icon`)" +
                                     "VALUES (?, ?, ?, ?, ?, ?)";
@@ -105,6 +105,8 @@ public class DataManager extends AbstractDataManager {
                 primaryStatement.setFloat(8, warp.getPosition().getYaw());
                 primaryStatement.setFloat(9, warp.getPosition().getPitch());
                 primaryStatement.setString(10, warp.getPosition().getWorld().getName());
+                primaryStatement.setLong(11, warp.getLastUpkeepTime());
+                primaryStatement.executeUpdate();
 
                 // Update the settings table with the warp's settings
                 settingsStatement.setString(1, warp.getId());
@@ -113,14 +115,12 @@ public class DataManager extends AbstractDataManager {
                 settingsStatement.setBoolean(4, warp.isPublic());
                 settingsStatement.setDouble(5, warp.getTeleportFee());
                 settingsStatement.setBytes(6, WarpUtils.serializeItem(warp.getIcon()));
+                settingsStatement.executeUpdate();
 
                 // Update the lists table with the warp's lists
                 listsStatement.setString(1, warp.getId());
                 listsStatement.setString(2, GSON.toJson(new UUIDSerialized(warp.getBanned())));
                 listsStatement.setString(3, GSON.toJson(new UUIDSerialized(warp.getVisitors())));
-
-                primaryStatement.executeUpdate();
-                settingsStatement.executeUpdate();
                 listsStatement.executeUpdate();
             }
         }));
@@ -136,7 +136,7 @@ public class DataManager extends AbstractDataManager {
         this.warps.remove(id);
 
         this.async(() -> this.databaseConnector.connect(connection -> {
-            String deletePrimary = "DELETE FROM " + this.getTablePrefix() + "warpS WHERE id = ?";
+            String deletePrimary = "DELETE FROM " + this.getTablePrefix() + "warps WHERE id = ?";
             String deleteSettings = "DELETE FROM " + this.getTablePrefix() + "settings WHERE id = ?";
             String deleteLists = "DELETE FROM " + this.getTablePrefix() + "lists WHERE id = ?";
 
@@ -187,6 +187,7 @@ public class DataManager extends AbstractDataManager {
                     Warp warp = new Warp(result.getString("id"), UUID.fromString(result.getString("owner")), position);
                     warp.setOwnerName(ownerName);
                     warp.setCreationTime(result.getLong("created"));
+                    warp.setLastUpkeepTime(result.getLong("last_upkeep"));
 
                     this.warps.put(warp.getId(), warp);
                 }

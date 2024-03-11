@@ -9,6 +9,11 @@ unknown-command: "Unknown command, use #00B4DB/%cmd%&f help for more info"
 invalid-funds: "You do not have enough funds to do that!"
 not-warp-owner: "You cannot change a warp that you don't own."
 
+# Upkeep Messages
+upkeep-success: 'You have paid the upkeep fee of $%cost% for %warp%.'
+upkeep-fail: 'You did not have enough money to afford the upkeep of %warp%, it has been deleted.'
+upkeep-warn: 'Your warp, %warp%, will be deleted in a minute if you do not pay the upkeep fee of $%cost%.'
+
 # Help Command Messages
 command-help-title: "Available Commands:"
 command-help-description: "Displays the help menu"

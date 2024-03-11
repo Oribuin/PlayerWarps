@@ -25,7 +25,8 @@ public class _1_CreateInitialTables extends DataMigration {
                          "`z` DOUBLE NOT NULL, " +
                          "`yaw` FLOAT NOT NULL, " +
                          "`pitch` FLOAT NOT NULL, " +
-                         "`world` TEXT NOT NULL)";
+                         "`world` TEXT NOT NULL, " +
+                         "`last_upkeep` LONG NOT NULL DEFAULT 0)";
 
         String settings = "CREATE TABLE IF NOT EXISTS " + tablePrefix + "settings(" +
                           "`id` TEXT NOT NULL PRIMARY KEY, " +

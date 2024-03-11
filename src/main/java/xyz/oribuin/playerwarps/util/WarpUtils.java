@@ -19,6 +19,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.oribuin.playerwarps.PlayerWarpsPlugin;
+import xyz.oribuin.playerwarps.manager.ConfigurationManager.Setting;
 import xyz.oribuin.playerwarps.manager.LocaleManager;
 
 import java.io.ByteArrayInputStream;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +62,15 @@ public final class WarpUtils {
         return amount;
     }
 
+    /**
+     * Get the date from a time in milliseconds
+     *
+     * @param time The time in milliseconds
+     * @return The date
+     */
+    public static String getDate(long time) {
+        return new SimpleDateFormat(Setting.DATE_FORMAT.getString()).format(time);
+    }
 
     /**
      * Get an enum from a string value
@@ -101,7 +112,6 @@ public final class WarpUtils {
 
         return def;
     }
-
 
     /**
      * Create a file in a folder from the plugin's resources
@@ -222,7 +232,6 @@ public final class WarpUtils {
         return deserialize(section, sender, key, StringPlaceholders.empty());
     }
 
-
     /**
      * Get a bukkit color from a hex code
      *
@@ -279,7 +288,6 @@ public final class WarpUtils {
      * @param list The list to parse
      * @return The parsed list
      */
-    @SuppressWarnings("unchecked")
     public static List<Integer> parseList(List<String> list) {
         List<Integer> newList = new ArrayList<>();
         for (String s : list) {

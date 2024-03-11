@@ -29,6 +29,7 @@ public class Warp {
     private @NotNull List<UUID> visitors;
     private boolean isPublic;
     private long creationTime;
+    private long lastUpkeepTime;
     private double teleportFee;
 
     /**
@@ -50,6 +51,7 @@ public class Warp {
         this.visitors = new ArrayList<>();
         this.isPublic = true;
         this.creationTime = System.currentTimeMillis();
+        this.lastUpkeepTime = System.currentTimeMillis();
         this.teleportFee = 0.0;
     }
 
@@ -174,6 +176,14 @@ public class Warp {
 
     public void setCreationTime(long creationTime) {
         this.creationTime = creationTime;
+    }
+
+    public long getLastUpkeepTime() {
+        return lastUpkeepTime;
+    }
+
+    public void setLastUpkeepTime(long lastUpkeepTime) {
+        this.lastUpkeepTime = lastUpkeepTime;
     }
 
     public double getTeleportFee() {
