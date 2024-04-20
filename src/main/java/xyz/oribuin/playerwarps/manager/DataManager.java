@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class DataManager extends AbstractDataManager {
 
@@ -79,7 +80,7 @@ public class DataManager extends AbstractDataManager {
     public void save(Warp warp) {
         this.warps.put(warp.getId(), warp);
 
-        this.async(() -> this.databaseConnector.connect(connection -> {
+        CompletableFuture.runAsync(() -> this.databaseConnector.connect(connection -> {
             String updatePrimary = "REPLACE INTO " + this.getTablePrefix() + "warps (`id`, `owner`, `owner_name`, `created`, `x`, `y`, `z`, `yaw`, `pitch`, `world`, `last_upkeep`)" +
                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -135,7 +136,7 @@ public class DataManager extends AbstractDataManager {
     public void delete(String id) {
         this.warps.remove(id);
 
-        this.async(() -> this.databaseConnector.connect(connection -> {
+        CompletableFuture.runAsync((() -> this.databaseConnector.connect(connection -> {
             String deletePrimary = "DELETE FROM " + this.getTablePrefix() + "warps WHERE id = ?";
             String deleteSettings = "DELETE FROM " + this.getTablePrefix() + "settings WHERE id = ?";
             String deleteLists = "DELETE FROM " + this.getTablePrefix() + "lists WHERE id = ?";
@@ -153,7 +154,7 @@ public class DataManager extends AbstractDataManager {
                 settingsStatement.executeUpdate();
                 listsStatement.executeUpdate();
             }
-        }));
+        })));
     }
 
     /**
@@ -163,8 +164,7 @@ public class DataManager extends AbstractDataManager {
     private void loadWarps() {
         this.warps.clear();
 
-        this.async(() -> this.databaseConnector.connect(connection -> {
-
+        CompletableFuture.runAsync(() -> this.databaseConnector.connect(connection -> {
             String selectPrimary = "SELECT * FROM " + this.getTablePrefix() + "warps";
             String selectSettings = "SELECT * FROM " + this.getTablePrefix() + "settings";
             String selectLists = "SELECT * FROM " + this.getTablePrefix() + "lists";
@@ -229,18 +229,6 @@ public class DataManager extends AbstractDataManager {
     @Override
     public List<Class<? extends DataMigration>> getDataMigrations() {
         return List.of(_1_CreateInitialTables.class);
-    }
-
-    /**
-     * Execute a runnable async off the main thread
-     *
-     * @param runnable The runnable to run async
-     */
-    private void async(Runnable runnable) {
-        PlayerWarpsPlugin.SCHEDULER
-                .scheduling()
-                .asyncScheduler()
-                .run(runnable);
     }
 
     public Map<String, Warp> getWarps() {

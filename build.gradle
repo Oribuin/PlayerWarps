@@ -52,7 +52,6 @@ dependencies {
     compileOnly "com.mojang:authlib:1.5.21"
 
     // Frameworks & APIs
-    api "space.arim.morepaperlib:morepaperlib:0.4.3"
     api "io.papermc:paperlib:1.0.7"
     api "dev.rosewood:rosegarden:${gardenVersion}"
     api("dev.triumphteam:triumph-gui:${guiVersion}") {  // https://mf.mattstudios.me/triumph-gui/introduction

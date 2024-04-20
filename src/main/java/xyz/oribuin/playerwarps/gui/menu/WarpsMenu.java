@@ -18,6 +18,7 @@ import xyz.oribuin.playerwarps.util.WarpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class WarpsMenu extends PluginMenu {
 
@@ -61,7 +62,7 @@ public class WarpsMenu extends PluginMenu {
                 .place(gui);
 
         // Add all the warps to the gui
-        this.async(() -> {
+        CompletableFuture.runAsync(() -> {
             this.manager.getWarps().forEach((s, warp) -> {
                 StringPlaceholders placeholders = this.getWarpPlaceholders(warp);
                 ItemStack warpIcon = WarpUtils.deserialize(this.config, player, "warp-icon", placeholders);

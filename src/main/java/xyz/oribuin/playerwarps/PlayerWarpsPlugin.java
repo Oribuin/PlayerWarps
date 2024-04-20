@@ -6,7 +6,6 @@ import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import space.arim.morepaperlib.MorePaperLib;
 import xyz.oribuin.playerwarps.gui.MenuProvider;
 import xyz.oribuin.playerwarps.hook.VaultProvider;
 import xyz.oribuin.playerwarps.manager.CommandManager;
@@ -21,7 +20,6 @@ import java.util.List;
 
 public class PlayerWarpsPlugin extends RosePlugin {
 
-    public static MorePaperLib SCHEDULER;
     private static PlayerWarpsPlugin instance;
 
     public PlayerWarpsPlugin() {
@@ -35,7 +33,6 @@ public class PlayerWarpsPlugin extends RosePlugin {
         );
 
         instance = this;
-        SCHEDULER = new MorePaperLib(this);
     }
 
     @Override

@@ -8,6 +8,7 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import dev.triumphteam.gui.guis.ScrollingGui;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import xyz.oribuin.playerwarps.PlayerWarpsPlugin;
@@ -148,20 +149,7 @@ public abstract class PluginMenu {
      * @param runnable The task to run
      */
     public final void sync(Runnable runnable) {
-        PlayerWarpsPlugin.SCHEDULER.scheduling()
-                .globalRegionalScheduler()
-                .run(runnable);
-    }
-
-    /**
-     * Run a task asynchronously
-     *
-     * @param runnable The task to run
-     */
-    public final void async(Runnable runnable) {
-        PlayerWarpsPlugin.SCHEDULER.scheduling()
-                .asyncScheduler()
-                .run(runnable);
+        Bukkit.getScheduler().runTask(PlayerWarpsPlugin.get(), runnable);
     }
 
     /**
