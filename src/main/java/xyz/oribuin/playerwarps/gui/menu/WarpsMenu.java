@@ -6,6 +6,7 @@ import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import xyz.oribuin.playerwarps.PlayerWarpsPlugin;
 import xyz.oribuin.playerwarps.gui.MenuItem;
@@ -87,6 +88,7 @@ public class WarpsMenu extends PluginMenu {
                 ItemStack newIcon = new ItemBuilder(warpIcon)
                         .name(this.locale.format(player, this.config.getString("warp-icon.name"), placeholders))
                         .lore(newLore)
+                        .flags(ItemFlag.values())
                         .build();
 
                 gui.addItem(new GuiItem(newIcon, event -> warp.teleport(player)));
