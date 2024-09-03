@@ -82,7 +82,7 @@ public class WarpsMenu extends PluginMenu {
                     if (warp.getDescription().isEmpty()) continue;
 
                     // Add the description to the lore
-                    warp.getDescription().forEach(line -> newLore.add(this.locale.format(player, line, placeholders)));
+                    warp.getDescription().forEach(line -> newLore.add(this.locale.safeFormat(player, line, placeholders)));
                 }
 
                 ItemStack newIcon = new ItemBuilder(warpIcon)

@@ -40,6 +40,7 @@ public class LocaleManager extends AbstractLocaleManager {
      * Get a string list from a locale key
      *
      * @param messageKey The key to get the message from
+     *
      * @return The message
      */
     public List<String> getLocaleMessages(String messageKey, StringPlaceholders placeholders) {
@@ -53,6 +54,7 @@ public class LocaleManager extends AbstractLocaleManager {
      * Get a list of strings from a locale key
      *
      * @param key The key to get the string list from
+     *
      * @return The string list
      */
     public List<String> getLocaleStringList(String key) {
@@ -114,6 +116,7 @@ public class LocaleManager extends AbstractLocaleManager {
      * @param sender       The CommandSender to send the message to
      * @param message      The message to send
      * @param placeholders The placeholders to apply to the message
+     *
      * @return The formatted string
      */
     @NotNull
@@ -128,11 +131,31 @@ public class LocaleManager extends AbstractLocaleManager {
     }
 
     /**
+     * Format a string with placeholders but no PlaceholderAPI Support
+     *
+     * @param sender       The CommandSender to send the message to
+     * @param message      The message to send
+     * @param placeholders The placeholders to apply to the message
+     *
+     * @return The formatted string
+     */
+    public String safeFormat(CommandSender sender, String message, StringPlaceholders placeholders) {
+        if (message == null || message.isEmpty())
+            return "";
+
+        if (placeholders == null)
+            placeholders = StringPlaceholders.empty();
+
+        return HexUtils.colorify(sender, placeholders.apply(message));
+    }
+
+    /**
      * Format a list of strings with placeholders
      *
      * @param sender       The CommandSender to send the message to
      * @param messages     The messages to send
      * @param placeholders The placeholders to apply to the messages
+     *
      * @return The formatted string
      */
     @NotNull
