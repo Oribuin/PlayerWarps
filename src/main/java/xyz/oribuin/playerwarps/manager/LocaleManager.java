@@ -133,20 +133,19 @@ public class LocaleManager extends AbstractLocaleManager {
     /**
      * Format a string with placeholders but no PlaceholderAPI Support
      *
-     * @param sender       The CommandSender to send the message to
      * @param message      The message to send
      * @param placeholders The placeholders to apply to the message
      *
      * @return The formatted string
      */
-    public String safeFormat(CommandSender sender, String message, StringPlaceholders placeholders) {
+    public String safeFormat(String message, StringPlaceholders placeholders) {
         if (message == null || message.isEmpty())
             return "";
 
         if (placeholders == null)
             placeholders = StringPlaceholders.empty();
 
-        return HexUtils.colorify(sender, placeholders.apply(message));
+        return HexUtils.colorify(placeholders.apply(message));
     }
 
     /**
